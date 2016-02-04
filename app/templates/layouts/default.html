@@ -67,7 +67,9 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='scripts/site.min.js') }}"></script>
+    {% assets "site_scripts" %}
+    <script src="{{ ASSET_URL }}"></script>
+    {% endassets %}
 
     <script>
     Zepto(function($) {

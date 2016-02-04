@@ -5,6 +5,7 @@ import uuid
 from app.admin import VoucherAdmin
 from app.models import User, Role, db, users
 from app.resources import api, GatewayResource, NetworkResource, UserResource, VoucherResource, logos
+from flask.ext.assets import Environment, Bundle
 from flask.ext.dotenv import DotEnv
 from flask.ext.login import current_user, LoginManager
 from flask.ext.uploads import configure_uploads
@@ -29,6 +30,29 @@ def create_app():
 
     principals = Principal()
     principals.init_app(app)
+
+    assets = Environment()
+    assets.init_app(app)
+
+    js = Bundle('../assets/bower_components/es5-shim/es5-shim.js',
+                '../assets/bower_components/html5shiv/dist/html5shiv.js',
+                filters='rjsmin', output='scripts/ie.js')
+    assets.register('ie_scripts', js)
+
+    js = Bundle('../assets/bower_components/zepto/dist/zepto.js',
+                '../assets/bower_components/riot/riot.js',
+                '../assets/bower_components/riotcontrol/riotcontrol.js',
+                '../assets/bower_components/marked/lib/marked.js',
+                '../assets/scripts/notifications.js',
+                '../assets/scripts/stores.js',
+                '../assets/scripts/ui.js',
+                '../assets/mixins/crud.js',
+                '../assets/mixins/currentuser.js',
+                '../assets/mixins/events.js',
+                '../assets/mixins/networks.js',
+                '../assets/mixins/render.js',
+                filters='rjsmin', output='scripts/site.js')
+    assets.register('site_scripts', js)
 
     configure_uploads(app, logos)
 

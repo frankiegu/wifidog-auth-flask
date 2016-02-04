@@ -7,6 +7,7 @@ import json
 from app import create_app, init_db
 from app.admin import VoucherAdmin
 from app.models import Role, Network, Gateway, Voucher, db, users
+from flask.ext.assets import ManageAssets
 from flask.ext.script import Manager, prompt, prompt_pass
 from flask.ext.security.utils import encrypt_password
 from flask.ext.migrate import Migrate, MigrateCommand
@@ -26,6 +27,7 @@ manager = Manager(app)
 migrate = Migrate(app, db)
 
 manager.add_command('db', MigrateCommand)
+manager.add_command('db', ManageAssets())
 
 @manager.command
 def bootstrap_tests():

@@ -40,7 +40,7 @@ var isProduction = true,
     ],
     ieScripts = [
         'bower_components/es5-shim/es5-shim.js',
-        'bower_components/html5shiv/html5shiv.js'
+        'bower_components/html5shiv/dist/html5shiv.js'
     ],
     siteScripts = [
         'bower_components/zepto/dist/zepto.js',

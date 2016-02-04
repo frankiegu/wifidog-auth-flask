@@ -1,7 +1,8 @@
 *.pyc
+app/static/.webassets-cache/
+app/assets/bower_components/
 app/tags/**/*.js
 bootstrap.py
-bower_components/
 build/
 logs/
 node_modules/
