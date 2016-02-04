@@ -1,5 +1,6 @@
 blinker
 Flask
+Flask-Assets
 Flask-Bcrypt
 Flask-DotEnv
 Flask-Login==0.2.11
