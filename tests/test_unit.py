@@ -16,7 +16,7 @@ from flask.ext.security.utils import encrypt_password
 from lxml import etree
 from StringIO import StringIO
 
-with open(BASE_DIR + '/tests.db', 'r') as tests_db:
+with open(BASE_DIR + '/data/tests.db', 'r') as tests_db:
     content = tests_db.read()
 
 class TestCase(unittest.TestCase):
@@ -75,7 +75,7 @@ class TestCase(unittest.TestCase):
     def test_home_redirects_to_login(self):
         response = self.client.get('/')
         self.assertEquals(302, response.status_code)
-        self.assertEquals('http://localhost/login', response.headers['Location'])
+        self.assertEquals('http://localhost/login?next=%2F', response.headers['Location'])
 
     def test_login(self):
         response = self.client.get('/login')

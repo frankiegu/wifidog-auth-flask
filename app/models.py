@@ -64,6 +64,9 @@ class User(db.Model, UserMixin):
     gateway_id = db.Column(db.Unicode(20), db.ForeignKey('gateways.id', onupdate='cascade'))
     gateway = db.relationship('Gateway', backref=backref('users', lazy='dynamic'))
 
+    given_name = db.Column(db.Unicode(40), nullable=False)
+    family_name = db.Column(db.Unicode(40), nullable=False)
+
     email = db.Column(db.Unicode(255), nullable=False)
     password = db.Column(db.String(255), nullable=False)
 
@@ -87,7 +90,7 @@ class Network(db.Model):
     description = db.Column(db.UnicodeText)
     ga_tracking_id = db.Column(db.String(20))
 
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
 class Gateway(db.Model):
     __tablename__ = 'gateways'

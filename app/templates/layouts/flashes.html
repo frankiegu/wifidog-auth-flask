@@ -1,9 +1,13 @@
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
-<ul class="flashes">
-    {% for category, message in messages %}
-    <li class="{{ category }}">{{ message }}</li>
-    {% endfor %}
-</ul>
+{% for category, message in messages %}
+<p class="
+{% if category == 'message' %}
+message
+{% else %}
+flakes-message {{ category }}
+{% endif %}
+">{{ message }}</p>
+{% endfor %}
 {% endif %}
 {% endwith %}

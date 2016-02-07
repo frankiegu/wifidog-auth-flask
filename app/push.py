@@ -1,6 +1,11 @@
+import flask
+import time
+
 from app.utils import has_role
-from flask import Blueprint
+from app.forms import BroadcastForm
+from flask import Blueprint, current_app
 from flask.ext.menu import register_menu
+from flask.ext.security import login_required, roles_required
 from redis import StrictRedis, ConnectionError
 
 from gevent import monkey
@@ -9,13 +14,13 @@ monkey.patch_all()
 bp = Blueprint('push', __name__)
 redis = StrictRedis(host='127.0.0.1', port=6379, db=13)
 
+
 def event_stream():
-    channels = [ 'notifications' ]
+    channels = ['notifications']
 
     pubsub = redis.pubsub()
     pubsub.subscribe(channels)
 
-    count = 0
     while True:
         try:
             for message in pubsub.listen():
@@ -33,8 +38,20 @@ def event_stream():
                     pubsub.subscribe(channels)
                     break
 
-@bp.route('/broadcast', methods=[ 'GET', 'POST' ])
-@register_menu(bp, '.broadcast', 'Broadcast', visible_when=has_role('super-admin'), order=5)
+
+def push_is_visible():
+    return current_app.config.get('PUSH_ENABLED') and has_role('super-admin')
+
+
+@bp.route('/broadcast', methods=['GET', 'POST'])
+@login_required
+@roles_required('super-admin')
+@register_menu(bp,
+               '.broadcast',
+               'Broadcast',
+               visible_when=push_is_visible,
+               order=5,
+               category='Messaging')
 def broadcast():
     form = BroadcastForm(flask.request.form)
 
@@ -45,6 +62,9 @@ def broadcast():
 
     return flask.render_template('broadcast.html', form=form)
 
+
 @bp.route('/push')
+@login_required
+@roles_required('super-admin')
 def push():
     return flask.Response(event_stream(), mimetype='text/event-stream')

@@ -3,18 +3,28 @@
 
 {% if field.errors %}
 <div class="state state-invalid">
-    <span class="oi" data-glyph="x" title="X" aria-hidden="true"></span>
-    {{ field.errors | join('; ') }}
+<span class="oi" data-glyph="x" title="X" aria-hidden="true"></span>
+{{ field.errors | join('; ') }}
 </div>
 {% endif %}
 {% endmacro %}
 
 {% macro render_group(field) %}
 <div class="pure-control-group">
-    {% if kwargs['required'] %}<b>{% endif %}{{ label or field.label }}{% if kwargs['required'] %}</b>{% endif %}
-    {{ render_field(field, **kwargs) }}
-    {% if field.description %}
-    <span class="description">{{ field.description }}</span>
-    {% endif %}
+{% if kwargs['required'] %}<b>{% endif %}{{ label or field.label }}{% if kwargs['required'] %}</b>{% endif %}
+{{ render_field(field, **kwargs) }}
+{% if field.description %}
+<span class="description">{{ field.description }}</span>
+{% endif %}
 </div>
+{% endmacro %}
+
+{% macro render_grid_field(field) %}
+{{ field.label }}
+{{ field() }}
+{% if field.errors %}
+<span class="error">{{ field.errors | join(', ') }}</span>
+{% elif field.description %}
+<span class="description">{{ field.description }}</span>
+{% endif %}
 {% endmacro %}

@@ -1,13 +1,48 @@
-{% extends 'layouts/default.html' %}
+{% extends 'layouts/flakes.html' %}
 
 {% set title = 'Vouchers' %}
 
-{% block head %}
-<!--[if lt IE 9]>
-<script>html5.addElements('vouchers')</script>
-<![endif]-->
-{% endblock %}
-
 {% block content %}
-<vouchers></vouchers>
+<h1>Vouchers</h1>
+
+<div id="vouchers-index">
+    <div class="flakes-actions-bar">
+        <a class="action button-gray smaller right" href="/new-voucher">
+            <span class="oi" data-glyph="file" title="New Voucher" aria-hidden="true"></span>
+            New Voucher
+        </a>
+    </div>
+
+    <table if={ vouchers.length } class="flakes-table">
+        <colgroup>
+            <col span="1" style="width: 20px">
+        </colgroup>
+        <thead>
+            <tr>
+                <th><input type="checkbox"></th>
+                <th>Code</th>
+                <th>Name</th>
+                <th>S</th>
+                <th>Times</th>
+                <th>Minutes Left</th>
+                <th style="text-align:right">Traffic (MB)</th>
+
+                <th class="actions">Actions</th>
+            </tr>
+        </thead>
+        <tbody class="list">
+            {% for voucher in vouchers %}
+            <tr data-id={{ voucher.id }}>
+                <td><input type="checkbox"></td>
+                <td class="code" data-label="Code">{{ voucher.code }}</td>
+                <td class="name" data-label="Name">{{ voucher.name or '-' }}</td>
+                <td class="status" data-label="Status"><span class="oi" data-glyph="{{ status_icons[voucher.status] }}" title="{{ voucher.status }}" aria-hidden="true"></span></td>
+                <td data-label="Times">{ renderTimes(voucher) }</td>
+                <td data-label="Minutes Left">{ voucher.status == 'active' ? render(voucher.time_left) + '/' : '' }{ render(voucher.minutes) }</td>
+                <td data-label="Traffic" style="text-align:right">{ renderBytes(voucher.incoming) } in; { renderBytes(voucher.outgoing) } out; { renderBytes(voucher.incoming + voucher.outgoing) } both</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}

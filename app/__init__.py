@@ -2,17 +2,18 @@ import datetime
 import flask
 import uuid
 
-from app.admin import VoucherAdmin
-from app.models import User, Role, db, users
-from app.resources import api, GatewayResource, NetworkResource, UserResource, VoucherResource, logos
-from app.services import influx_db, menu, security
+from app.context_processors import init_context_processors
+from app.forms import init_forms
+from app.models import db, users
+from app.resources import api, logos
+from app.ext import influx_db, menu, principal, security
 from app.signals import init_signals
-from app.views import bp
 
-from flask.ext.login import current_user, LoginManager
+from flask.ext.login import current_user
 from flask.ext.uploads import configure_uploads
-from flask.ext.potion.contrib.principals.needs import HybridRelationshipNeed
-from flask.ext.principal import Identity, UserNeed, AnonymousIdentity, identity_loaded, RoleNeed, Principal
+from flask.ext.principal import Identity, UserNeed, AnonymousIdentity, \
+        identity_loaded, RoleNeed
+
 
 def create_app(config=None):
     app = flask.Flask(__name__)
@@ -23,17 +24,20 @@ def create_app(config=None):
         app.config.update(**config)
 
     db.init_app(app)
+    init_forms()
+
+    configure_uploads(app, logos)
+
     api.init_app(app)
     influx_db.init_app(app)
     menu.init_app(app)
-
     security.init_app(app, users)
-
-    principal = Principal()
     principal.init_app(app)
 
     init_signals(app)
-    configure_uploads(app, logos)
+    init_context_processors(app)
+
+    from app.views import bp
     app.register_blueprint(bp)
 
     @identity_loaded.connect_via(app)

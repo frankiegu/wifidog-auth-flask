@@ -23,5 +23,8 @@
     "nodemon": "^1.8.1",
     "promise": "~7.0.4",
     "riot": "^2.3.15"
+  },
+  "dependencies": {
+    "flakes": "^1.0.3"
   }
 }

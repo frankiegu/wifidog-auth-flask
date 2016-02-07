@@ -3,8 +3,10 @@
 
 import hmac
 import json
+import os
 
 from app import create_app
+from app.constants import ROLES
 from app.admin import VoucherAdmin
 from app.models import Role, Network, Gateway, Voucher, Country, Currency, Product, db, users
 from app.services import manager
@@ -15,15 +17,9 @@ from hashlib import md5
 from sqlalchemy import text, func
 
 
-ROLES = {
-    u'super-admin': u'Super Admin',
-    u'network-admin': u'Network Admin',
-    u'gateway-admin': u'Gateway Admin'
-}
-
 @manager.command
 def bootstrap_tests():
-    current_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../tests.db'
+    current_app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(current_app.config['BASE_DIR'], 'data/tests.db')
 
     db.create_all()
 
@@ -38,16 +34,16 @@ def bootstrap_tests():
     create_gateway(u'other-network', u'other-gateway1', u'Other Gateway #1', quiet=True)
     create_gateway(u'other-network', u'other-gateway2', u'Other Gateway #2', quiet=True)
 
-    create_user(u'super-admin@example.com', u'admin', u'super-admin', quiet=True)
+    create_user(u'super-admin@example.com', u'admin', u'Super', u'Admin', u'super-admin', quiet=True)
 
-    create_user(u'main-network@example.com', u'admin', u'network-admin', u'main-network', quiet=True)
-    create_user(u'other-network@example.com', u'admin', u'network-admin', u'other-network', quiet=True)
+    create_user(u'main-network@example.com', u'admin', u'Main', u'Network', u'network-admin', u'main-network', quiet=True)
+    create_user(u'other-network@example.com', u'admin', u'Other', u'Network', u'network-admin', u'other-network', quiet=True)
 
-    create_user(u'main-gateway1@example.com', u'admin', u'gateway-admin', u'main-network', u'main-gateway1', quiet=True)
-    create_user(u'main-gateway2@example.com', u'admin', u'gateway-admin', u'main-network', u'main-gateway2', quiet=True)
+    create_user(u'main-gateway1@example.com', u'admin', u'Main', u'Gateway1', u'gateway-admin', u'main-network', u'main-gateway1', quiet=True)
+    create_user(u'main-gateway2@example.com', u'admin', u'Main', u'Gateway2', u'gateway-admin', u'main-network', u'main-gateway2', quiet=True)
 
-    create_user(u'other-gateway1@example.com', u'admin', u'gateway-admin', u'other-network', u'other-gateway1', quiet=True)
-    create_user(u'other-gateway2@example.com', u'admin', u'gateway-admin', u'other-network', u'other-gateway2', quiet=True)
+    create_user(u'other-gateway1@example.com', u'admin', u'Other', u'Gateway1', u'gateway-admin', u'other-network', u'other-gateway1', quiet=True)
+    create_user(u'other-gateway2@example.com', u'admin', u'Other', u'Gateway1', u'gateway-admin', u'other-network', u'other-gateway2', quiet=True)
 
     create_voucher(u'main-gateway1', 60, 'main-1-1', quiet=True)
     create_voucher(u'main-gateway1', 60, 'main-1-2', quiet=True)
@@ -161,7 +157,7 @@ def create_gateway(network, id, title, description=None, email=None, phone=None,
         print 'Gateway created'
 
 @manager.command
-def create_user(email, password, role, network=None, gateway=None, quiet=True):
+def create_user(email, password, given_name, family_name, role, network=None, gateway=None, quiet=True):
     if email is None:
         email = prompt('Email')
 
@@ -191,6 +187,8 @@ def create_user(email, password, role, network=None, gateway=None, quiet=True):
 
     user = users.create_user(email=email, password=encrypt_password(password))
 
+    user.family_name = family_name
+    user.given_name = given_name
     user.network_id = network
     user.gateway_id = gateway
 

@@ -11,7 +11,7 @@ nodemon-tests: bootstrap-tests
 	nodemon tests.py
 
 bootstrap-tests:
-	rm -f tests.db
+	rm -f data/tests.db
 	python manage.py bootstrap_tests
 
 tests:
@@ -23,6 +23,10 @@ tests-webdriver:
 setup:
 	sudo apt-get install python-pip virtualenvwrapper libjpeg-dev libpng-dev libffi-dev
 	sudo npm install -g bower gulp
+
+setup-test-env:
+	cp .env.tests .env
+	echo "SQLALCHEMY_DATABASE_URI=sqlite:///`pwd`/data/tests.db" >> .env
 
 development-install:
 	bundle install

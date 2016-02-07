@@ -6,13 +6,10 @@
 <br>
 
 <form method="post" class="grid-form">
-    <div style="display: none">
-        {{ form.csrf_token }}
-    </div>
-
+    {% for form in forms %}
     {% include 'networks/form.html' %}
-
     <br>
+    {% endfor %}
 
     <button type="submit" class="button-darkblue bigger">Update</button>
 </form>
