@@ -10,6 +10,7 @@ from app.resources import api, logos
 from app.ext import influx_db, menu, principal, security
 from app.signals import init_signals
 
+from flask.ext import menu as menu_module
 from flask.ext.login import current_user
 from flask.ext.uploads import configure_uploads
 from flask.ext.principal import Identity, UserNeed, AnonymousIdentity, \
@@ -37,6 +38,11 @@ def create_app(config=None):
 
     init_signals(app)
     init_context_processors(app)
+
+    def func(self):
+        return flask.request.path == self.url
+
+    menu_module.MenuEntryMixin._active_when = func
 
     from app.views import bp
     app.register_blueprint(bp)

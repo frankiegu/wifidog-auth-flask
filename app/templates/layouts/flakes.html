@@ -37,7 +37,9 @@
 			<ul>
                 <li class="title">{{ title }}</li>
                 {% for item in items %}
-                <li><a href="{{ item.url }}">{{ item.text }}</a>
+                <li class="{{ item.active and 'active' }}">
+                    <a href="{{ item.url }}">{{ item.text }}</a>
+                </li>
                 {% endfor %}
 			</ul>
             {% endfor %}

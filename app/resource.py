@@ -166,15 +166,16 @@ def init_resources():
     resources = {
             'vouchers': 'Vouchers',
             'networks': 'Networks',
-            'currencies': 'System',
             'gateways': 'Gateways',
             'categories': 'Sales',
             'products': 'Sales',
+            'users': 'System',
+            'currencies': 'System',
     }
 
     endpoints = {
-            'index': [ '.%(resource)s', 'Manage %(plural)s' ],
-            'new': [ '.new-%(resource)s', 'New %(singular)s' ],
+            'index': [ '%(resource)s', 'Manage %(plural)s' ],
+            'new': [ '%(resource)s/new', 'New %(singular)s' ],
     }
 
     index = 0
@@ -190,6 +191,7 @@ def init_resources():
                           order=index,
                           endpoint_arguments_constructor=endpoint_arguments_constructor(resource),
                           expected_args=['resource_name'],
+                          visible_when=has_a_role(roles_by_resource[resource]),
                           category=category)
 
             index = index + 10
