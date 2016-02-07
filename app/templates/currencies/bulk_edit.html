@@ -1,0 +1,16 @@
+{% extends 'layouts/flakes.html' %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<br>
+
+<form method="post" class="grid-form">
+    {% for form in forms %}
+    {% include 'currencies/form.html' %}
+    <br>
+    {% endfor %}
+
+    <button type="submit" class="button-darkblue bigger">Update</button>
+</form>
+{% endblock %}

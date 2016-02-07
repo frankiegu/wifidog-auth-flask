@@ -21,7 +21,7 @@
 
 {% macro render_grid_field(field) %}
 {{ field.label }}
-{{ field() }}
+{{ field(*args, **kwargs) }}
 {% if field.errors %}
 <span class="error">{{ field.errors | join(', ') }}</span>
 {% elif field.description %}

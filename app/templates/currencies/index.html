@@ -1,13 +1,45 @@
-{% extends 'layouts/default.html' %}
+{% extends 'layouts/flakes.html' %}
 
 {% set title = 'Currencies' %}
 
-{% block head %}
-<!--[if lt IE 9]>
-<script>html5.addElements('currencies')</script>
-<![endif]-->
-{% endblock %}
-
 {% block content %}
-<currencies></currencies>
+<h1>Currencies</h1>
+
+<div id="currencies-index">
+    <form method="post" action="/currencies">
+    <div class="flakes-actions-bar">
+        <button type="submit" class="action button-gray smaller left" name="action" value="delete">Delete</button>
+        <button type="submit" class="action button-gray smaller left" name="action" value="edit">Edit</button>
+        <a class="action button-gray smaller right" href="/currencies/new">
+            New Currency
+        </a>
+    </div>
+
+    <table if={ currencies.length } class="flakes-table">
+        <colgroup>
+            <col span="1" style="width: 20px">
+        </colgroup>
+        <thead>
+            <tr>
+                <td class="checkbox"></th>
+                <td class="id">ID</th>
+                <td class="title">Title</th>
+                <td class="prefix">Prefix</th>
+                <td class="suffix">Suffix</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for instance in instances %}
+            <tr data-id={{ instance.id }}>
+                <td class="checkbox"><input type="checkbox" name="ids" value="{{ instance.id }}"></td>
+                <td class="id" data-label="ID"><a href="{{ url_for('resource.edit', resource_name='currencies', id=instance.id) }}">{{ instance.id }}</a></td>
+                <td class="title" data-label="Title"><a href="{{ url_for('resource.edit', resource_name='currencies', id=instance.id) }}">{{ instance.title }}</a></td>
+                <td class="prefix" data-label="Prefix">{{ instance.prefix }}</td>
+                <td class="suffix" data-label="Suffix">{{ instance.suffix }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </form>
+</div>
 {% endblock %}

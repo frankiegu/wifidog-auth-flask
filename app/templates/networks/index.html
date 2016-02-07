@@ -29,13 +29,13 @@
             </tr>
         </thead>
         <tbody>
-            {% for network in networks %}
-            <tr data-id={{ network.id }}>
-                <td class="checkbox"><input type="checkbox" name="ids" value="{{ network.id }}"></td>
-                <td class="id" data-label="ID"><a href="{{ url_for('.networks_edit', network_id=network.id) }}">{{ network.id }}</a></td>
-                <td class="title" data-label="Title"><a href="{{ url_for('.networks_edit', network_id=network.id) }}">{{ network.title }}</a></td>
-                <td class="description" data-label="Description">{{ network.description }}</td>
-                <td class="created_at" data-label="Created At">{{ network.created_at.strftime('%c') }}</td> 
+            {% for instance in instances %}
+            <tr data-id={{ instance.id }}>
+                <td class="checkbox"><input type="checkbox" name="ids" value="{{ instance.id }}"></td>
+                <td class="id" data-label="ID"><a href="{{ url_for('resource.edit', resource_name='networks', id=instance.id) }}">{{ instance.id }}</a></td>
+                <td class="title" data-label="Title"><a href="{{ url_for('resource.edit', resource_name='networks', id=instance.id) }}">{{ instance.title }}</a></td>
+                <td class="description" data-label="Description">{{ instance.description }}</td>
+                <td class="created_at" data-label="Created At">{{ instance.created_at.strftime('%c') }}</td> 
             </tr>
             {% endfor %}
         </tbody>

@@ -1,4 +1,4 @@
-from app.models import Network, Voucher, db
+from app.models import Network, Currency, Gateway, Voucher, db
 from app.utils import args_get
 from flask import current_app
 from flask.ext.wtf import Form
@@ -50,16 +50,42 @@ class LoginVoucherForm(Form):
             raise validators.ValidationError('Voucher is %s' % voucher.status)
 
 NetworkForm = None
+GatewayForm = None
+CurrencyForm = None
+VoucherForm = None
 
 
 def init_forms():
-    global NetworkForm
+    global NetworkForm, GatewayForm, CurrencyForm, VoucherForm
 
     NetworkForm = model_form(Network,
                              db.session,
                              field_args={
                                  'id': {'label': 'ID'},
                              },
-                             exclude=[ 'products', 'gateways', ],
                              exclude_pk=False)
     NetworkForm.original_id = HiddenField()
+
+    GatewayForm = model_form(Gateway,
+                             db.session,
+                             field_args={
+                                 'id': {'label': 'ID'},
+                             },
+                             exclude_pk=False)
+    GatewayForm.original_id = HiddenField()
+
+    CurrencyForm = model_form(Currency,
+                              db.session,
+                              field_args={
+                                  'id': {'label': 'ID'},
+                              },
+                              exclude_pk=False)
+    CurrencyForm.original_id = HiddenField()
+
+    VoucherForm = model_form(Voucher,
+                             db.session,
+                             field_args={
+                                 'id': {'label': 'ID'},
+                             },
+                             exclude=['code', 'created_at', 'updated_at', 'status'])
+    VoucherForm.original_id = HiddenField()

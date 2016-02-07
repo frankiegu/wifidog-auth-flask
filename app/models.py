@@ -71,7 +71,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(255), nullable=False)
 
     active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     roles = db.relationship('Role', secondary=roles_users, backref=db.backref('users', lazy='dynamic'))
 
@@ -114,7 +114,10 @@ class Gateway(db.Model):
 
     login_ask_name = db.Column(db.Boolean(), default=False)
 
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __repr__(self):
+        return self.title
 
 def record_change(f):
     def func(self, **kwargs):
@@ -142,9 +145,9 @@ class Voucher(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
 
-    minutes = db.Column(db.Integer, nullable=False)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
-    updated_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    minutes = db.Column(db.Integer, nullable=False, default=90)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
     started_at = db.Column(db.DateTime)
     gw_address = db.Column(db.String(15))
     gw_port = db.Column(db.String(5))
@@ -152,7 +155,7 @@ class Voucher(db.Model):
     gateway_id = db.Column(db.Unicode(20), db.ForeignKey('gateways.id', onupdate='cascade'), nullable=False)
     gateway = db.relationship(Gateway, backref=backref('vouchers', lazy='dynamic'))
 
-    code = db.Column(db.String(20), default=generate_id, nullable=False)
+    code = db.Column(db.String(20), default=generate_id)
 
     mac = db.Column(db.String(20))
     ip = db.Column(db.String(15))
@@ -241,7 +244,7 @@ class Auth(db.Model):
 
     status = db.Column(db.Integer)
     messages = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def matches_voucher(self, voucher):
         return self.gateway_id == voucher.gateway_id and self.mac == voucher.mac and self.ip == voucher.ip
@@ -322,7 +325,7 @@ class Ping(db.Model):
     sys_memfree = db.Column(db.BigInteger)
     sys_load = db.Column(db.String)
     wifidog_uptime = db.Column(db.BigInteger)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
 class Change(db.Model):
     __tablename__ = 'changes'
@@ -336,7 +339,7 @@ class Change(db.Model):
     args = db.Column(db.Text)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = db.relationship(User, backref=backref('changes', lazy='dynamic'))
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
 country_currencies = db.Table('country_currencies',
     db.Column('country_id', db.String(3), db.ForeignKey('countries.id')),
@@ -386,7 +389,7 @@ class Category(db.Model):
 
     status = db.Column(db.String(20), nullable=False, default='new')
 
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
     __table_args__ = (
@@ -417,7 +420,7 @@ class Product(db.Model):
 
     price = db.Column(db.Integer) # Cents
 
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
     __table_args__ = (
@@ -446,7 +449,7 @@ class Order(db.Model):
 
     price = db.Column(db.Integer, nullable=False) # Cents
 
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
 class OrderItem(db.Model):
@@ -464,7 +467,7 @@ class OrderItem(db.Model):
     price_per_unit = db.Column(db.Integer, nullable=False) # Cents
     price = db.Column(db.Integer, nullable=False) # Cents
 
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)
 
 class Transaction(db.Model):
@@ -485,4 +488,4 @@ class Transaction(db.Model):
     status = db.Column(db.String(20), nullable=False, default='new')
     reference = db.Column(db.String(40))
 
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)

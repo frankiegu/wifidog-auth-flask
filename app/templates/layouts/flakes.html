@@ -33,7 +33,7 @@
                 <img src="{{ url_for('static', filename='img/logo.png') }}" width="120">
 			</a>
 
-            {% for title, items in menu_categories.iteritems() %}
+            {% for title, items in menu_categories() %}
 			<ul>
                 <li class="title">{{ title }}</li>
                 {% for item in items %}

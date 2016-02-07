@@ -15,6 +15,7 @@ Flask-Uploads
 Flask-WTF
 gitchangelog
 gunicorn
+inflect
 influxdb
 lxml
 markupsafe

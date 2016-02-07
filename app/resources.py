@@ -269,7 +269,7 @@ class CurrencyResource(PrincipalResource):
             'read': gateway_or_above,
             'create': super_admin_only,
             'update': super_admin_only,
-            'delete': 'no',
+            'delete': super_admin_only,
         }
 
     class Schema:

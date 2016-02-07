@@ -1,0 +1,16 @@
+{% from 'helpers/form.html' import render_grid_field %}
+
+{{ form.original_id }}
+
+<fieldset>
+    <legend>Voucher Details</legend>
+
+    <div data-row-span="2">
+        <div data-field-span="1">
+            {{ render_grid_field(form.gateway, widget=[]) }}
+        </div>
+        <div data-field-span="1">
+            {{ render_grid_field(form.minutes) }}
+        </div>
+    </div>
+</fieldset>

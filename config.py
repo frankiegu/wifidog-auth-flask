@@ -19,6 +19,13 @@ HOST = '0.0.0.0'
 INFLUXDB_DATABASE = 'auth'
 INFLUXDB_USER = os.environ.get('INFLUXDB_USER')
 INFLUXDB_PASSWORD = os.environ.get('INFLUXDB_PASSWORD')
+MENU_CATEGORY_ORDER = [
+        'Vouchers',
+        'Sales',
+        'Gateways',
+        'Networks',
+        'System',
+]
 PORT = 8080
 PUSH_ENABLED = False
 SECRET_KEY = os.environ.get('SECRET_KEY', 'secret')
