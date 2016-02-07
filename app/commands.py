@@ -9,7 +9,7 @@ from app import create_app
 from app.constants import ROLES
 from app.admin import VoucherAdmin
 from app.models import Role, Network, Gateway, Voucher, Country, Currency, Product, db, users
-from app.services import manager
+from app.ext import manager
 from flask import current_app
 from flask.ext.script import prompt, prompt_pass
 from flask.ext.security.utils import encrypt_password
