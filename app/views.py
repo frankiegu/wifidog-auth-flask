@@ -6,7 +6,7 @@ from app.models import Auth, Gateway, Network, Ping, Voucher, \
         generate_token, db
 from app.payu import get_transaction, set_transaction, capture
 from app.resources import VoucherResource
-from app.services import influx_db
+from app.ext import influx_db
 from app.signals import voucher_logged_in
 from app.utils import has_a_role
 
