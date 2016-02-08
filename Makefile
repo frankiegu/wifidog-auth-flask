@@ -66,7 +66,6 @@ reboot: remove-db bootstrap
 
 clean:
 	find . -name '*.pyc' -delete
-	rm -rf app/static/*
 
 graphs:
 	python app/graphs.py

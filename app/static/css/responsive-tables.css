@@ -1,0 +1,50 @@
+/* ==========================================================================
+   Responsive Table Styles
+========================================================================== */
+
+@media screen and (max-width: 48em) {
+	table {
+	    border: none;
+	    display: block;
+	    font-size: 0.75em;
+	    width: 100%;
+	}
+
+    thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    /* Hide table headers (but not display: none;, for accessibility) */
+    thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    tr {
+        margin: 0 0 1em;
+    }
+
+    tr:nth-child(odd) {
+        background: #cecece;
+    }
+
+    td {
+        /* Behave  like a "row" */
+        border: none;
+        text-align: right;
+    }
+
+    td.checkbox {
+        text-align: left;
+    }
+
+   	td:before {
+    	content: attr(data-label);
+    	font-size: larger;
+    	font-weight: bold;
+    	font-family: serif;
+    	float: left;
+        white-space: nowrap;
+    }
+}

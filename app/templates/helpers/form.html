@@ -23,8 +23,8 @@
 {{ field.label }}
 {{ field(*args, **kwargs) }}
 {% if field.errors %}
-<span class="error">{{ field.errors | join(', ') }}</span>
+<div class="error">{{ field.errors | join(', ') }}</div>
 {% elif field.description %}
-<span class="description">{{ field.description }}</span>
+<div class="description">{{ field.description }}</div>
 {% endif %}
 {% endmacro %}
