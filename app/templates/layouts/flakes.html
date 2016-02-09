@@ -22,12 +22,14 @@
 </head>
 
 <body>
+    {% if config['GTM_CONTAINER_ID'] %}
+    {% include 'layouts/gtm.html' %}
+    {% endif %}
 	<!--[if lt IE 7]>
 		<p class="chromeframe" style="background:#eee; padding:10px; width:100%">Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p>
 	<![endif]-->
 
 	<div class="flakes-frame">
-
 		<div class="flakes-navigation">
 			<a href="index.html" class="logo">
                 <img src="{{ url_for('static', filename='img/logo.png') }}" width="120">
@@ -86,5 +88,21 @@
 
     <script src="{{ url_for('static', filename='js/base.js') }}"></script>
     <script src="{{ url_for('static', filename='js/site.js') }}"></script>
+
+    <script>
+    jQuery(function($) {
+        {% if config.get('PUSH_ENABLED') %}
+        var eventSource = new EventSource('{{ url_for('app.push') }}');
+        eventSource.onmessage = function(response) {
+            new Notification(response.data);
+        };
+        {% endif %}
+
+        setupNotifications();
+    });
+    </script>
+
+    {% block scripts %}
+    {% endblock %}
 </body>
 </html>

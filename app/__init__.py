@@ -45,12 +45,13 @@ def create_app(config=None):
     menu_module.MenuEntryMixin._active_when = func
 
     from app.views import bp
-    app.register_blueprint(bp)
 
     app.register_blueprint(resource_blueprint)
 
     with app.app_context():
         init_resources()
+
+    app.register_blueprint(bp)
 
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):

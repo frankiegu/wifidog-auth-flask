@@ -24,6 +24,8 @@ roles_by_resource = {
     'vouchers': ('super-admin', 'network-admin', 'gateway-admin'),
 }
 
+resource_name = '<any(networks, gateways, vouchers, users, categories, products, currencies):resource_name>'
+
 
 def resource_by_name(name):
     singular = p.singular_noun(name)
@@ -37,14 +39,14 @@ def form_by_name(name):
     return getattr(forms, form_class)
 
 
-@resource_blueprint.route('/<resource_name>', methods=['GET', 'POST'])
+@resource_blueprint.route('/%s' % resource_name, methods=['GET', 'POST'])
 @login_required
 def index(resource_name):
     title = resource_name[0].upper() + resource_name[1:]
     resource = resource_by_name(resource_name)
 
     if flask.request.method == 'GET':
-        instances = resource.manager.instances()
+        instances = resource.manager.instances().all()
         return flask.render_template('%s/index.html' % resource_name,
                                      instances=instances)
     else:
@@ -64,7 +66,7 @@ def index(resource_name):
                                         resource_name=resource_name))
 
 
-@resource_blueprint.route('/<resource_name>/<id>/edit',
+@resource_blueprint.route('/%s/<id>/edit' % resource_name,
                           methods=['GET', 'POST'])
 @login_required
 def edit(resource_name, id):
@@ -95,7 +97,7 @@ def edit(resource_name, id):
                                  instance=instance)
 
 
-@resource_blueprint.route('/<resource_name>/new', methods=['GET', 'POST'])
+@resource_blueprint.route('/%s/new' % resource_name, methods=['GET', 'POST'])
 @login_required
 def new(resource_name):
     singular = p.singular_noun(resource_name)
@@ -116,7 +118,7 @@ def new(resource_name):
                                  instance=instance)
 
 
-@resource_blueprint.route('/<resource_name>/edit', methods=['GET', 'POST'])
+@resource_blueprint.route('/%s/edit' % resource_name, methods=['GET', 'POST'])
 @login_required
 def bulk_edit(resource_name):
     singular = p.singular_noun(resource_name)
@@ -180,6 +182,9 @@ def init_resources():
 
     index = 0
 
+    def visible_when(resource):
+        return has_a_role(*roles_by_resource[resource])
+
     for resource, category in resources.iteritems():
         for action, defn in endpoints.iteritems():
             (path, title) = defn
@@ -191,7 +196,7 @@ def init_resources():
                           order=index,
                           endpoint_arguments_constructor=endpoint_arguments_constructor(resource),
                           expected_args=['resource_name'],
-                          visible_when=has_a_role(roles_by_resource[resource]),
+                          visible_when=visible_when(resource),
                           category=category)
 
             index = index + 10

@@ -87,7 +87,7 @@ class TestCase(unittest.TestCase):
         response = self.login('main-gateway1@example.com', 'admin')
 
         self.assertEquals(302, response.status_code)
-        self.assertEquals('http://localhost/vouchers', response.headers['Location'])
+        self.assertEquals('http://localhost/', response.headers['Location'])
 
     def test_api_networks_index_as_gateway(self):
         self.login('main-gateway1@example.com', 'admin')

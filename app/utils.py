@@ -2,20 +2,28 @@ import flask
 
 from flask.ext.security import current_user
 
+# These functions all assume they are in request context
+
+
 def is_logged_out():
-    return not current_user.is_authenticated
+    return current_user is None or not current_user.is_authenticated
+
 
 def is_logged_in():
-    return current_user and current_user.is_authenticated
+    return current_user is not None and current_user.is_authenticated
+
 
 def has_role(role):
     def func():
-        return current_user and current_user.is_authenticated and current_user.has_role(role)
+        return current_user is not None and \
+                current_user.is_authenticated and \
+                current_user.has_role(role)
     return func
+
 
 def has_all_roles(*roles):
     def func():
-        if current_user and current_user.is_authenticated:
+        if current_user is not None and current_user.is_authenticated:
             for role in roles:
                 if not current_user.has_role(role):
                     return False
@@ -23,14 +31,16 @@ def has_all_roles(*roles):
         return False
     return func
 
+
 def has_a_role(*roles):
     def func():
-        if current_user and current_user.is_authenticated:
+        if current_user is not None and current_user.is_authenticated:
             for role in roles:
                 if current_user.has_role(role):
                     return True
         return False
     return func
+
 
 def args_get(which):
     def func():
@@ -39,4 +49,3 @@ def args_get(which):
             value = None
         return value
     return func
-

@@ -1,11 +1,11 @@
 import flask
+import jinja2
 
 from app.constants import ROLES
 from app.forms import LoginVoucherForm, NewVoucherForm
 from app.models import Auth, Gateway, Network, Ping, Voucher, \
         generate_token, db
 from app.payu import get_transaction, set_transaction, capture
-from app.resources import VoucherResource
 from app.ext import influx_db
 from app.signals import voucher_logged_in
 from app.utils import has_a_role
@@ -15,6 +15,11 @@ from flask.ext.security import login_required, roles_accepted, current_user
 
 bp = flask.Blueprint('app', __name__)
 
+
+@jinja2.contextfilter
+@bp.app_template_filter()
+def bytes(context, value):
+    return value / 1024
 
 @bp.route('/new-voucher', methods=['GET', 'POST'])
 @login_required

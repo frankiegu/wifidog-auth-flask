@@ -1,7 +1,7 @@
 import inflect
 
 from app import resources
-from app.models import Network, Currency, Gateway, Voucher, db
+from app.models import Network, Currency, Gateway, Voucher, Product, Category, db
 from app.utils import args_get
 from flask import current_app
 from flask.ext.wtf import Form
@@ -162,10 +162,12 @@ NetworkForm = None
 GatewayForm = None
 CurrencyForm = None
 VoucherForm = None
+ProductForm = None
+CategoryForm = None
 
 
 def init_forms():
-    global NetworkForm, GatewayForm, CurrencyForm, VoucherForm
+    global NetworkForm, GatewayForm, CurrencyForm, VoucherForm, ProductForm, CategoryForm
 
     converter = Converter()
 
@@ -204,3 +206,19 @@ def init_forms():
                              converter=converter,
                              exclude=['code', 'created_at', 'updated_at', 'status'])
     VoucherForm.original_id = HiddenField()
+
+    ProductForm = model_form(Product,
+                             db.session,
+                             field_args={
+                                 'id': {'label': 'ID'},
+                             },
+                             converter=converter)
+    ProductForm.original_id = HiddenField()
+
+    CategoryForm = model_form(Category,
+                             db.session,
+                             field_args={
+                                 'id': {'label': 'ID'},
+                             },
+                             converter=converter)
+    CategoryForm.original_id = HiddenField()
