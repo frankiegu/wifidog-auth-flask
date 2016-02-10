@@ -16,9 +16,9 @@ from StringIO import StringIO
 with open(BASE_DIR + '/data/tests.db', 'r') as tests_db:
     content = tests_db.read()
 
-class TestCase(unittest.TestCase):
+class TestWebsite(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        super(TestCase, self).__init__(*args, **kwargs)
+        super(TestWebsite, self).__init__(*args, **kwargs)
 
     def setUp(self):
         self.fd, self.filename = tempfile.mkstemp()
@@ -201,7 +201,7 @@ class TestCase(unittest.TestCase):
     def test_voucher_new_as_gateway(self):
         self.login('main-gateway1@example.com', 'admin')
 
-        response = self.client.get('/new-voucher', follow_redirects=True)
+        response = self.client.get('/vouchers/new', follow_redirects=True)
         self.assertEquals(200, response.status_code)
 
         html = self.get_html(response)
@@ -213,7 +213,7 @@ class TestCase(unittest.TestCase):
     def test_voucher_new_as_network(self):
         self.login('main-network@example.com', 'admin')
 
-        response = self.client.get('/new-voucher', follow_redirects=True)
+        response = self.client.get('/vouchers/new', follow_redirects=True)
         self.assertEquals(200, response.status_code)
 
         html = self.get_html(response)
@@ -227,7 +227,7 @@ class TestCase(unittest.TestCase):
     def test_voucher_new_as_super(self):
         self.login('super-admin@example.com', 'admin')
 
-        response = self.client.get('/new-voucher', follow_redirects=True)
+        response = self.client.get('/vouchers/new', follow_redirects=True)
         self.assertEquals(200, response.status_code)
 
         html = self.get_html(response)

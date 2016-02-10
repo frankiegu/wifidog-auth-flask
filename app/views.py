@@ -1,18 +1,21 @@
 import flask
+import inflect
 import jinja2
 
-from app.constants import ROLES
 from app.forms import LoginVoucherForm, NewVoucherForm
 from app.models import Auth, Gateway, Network, Ping, Voucher, \
         generate_token, db
 from app.payu import get_transaction, set_transaction, capture
+from app.resources import GatewayResource, NetworkResource, VoucherResource
 from app.ext import influx_db
 from app.signals import voucher_logged_in
 from app.utils import has_a_role
 
 from flask.ext.menu import register_menu
+from flask.ext.potion.instances import Condition, COMPARATORS
 from flask.ext.security import login_required, roles_accepted, current_user
 
+p = inflect.engine()
 bp = flask.Blueprint('app', __name__)
 
 
@@ -20,61 +23,6 @@ bp = flask.Blueprint('app', __name__)
 @bp.app_template_filter()
 def bytes(context, value):
     return value / 1024
-
-@bp.route('/new-voucher', methods=['GET', 'POST'])
-@login_required
-@roles_accepted('super-admin', 'network-admin', 'gateway-admin')
-@register_menu(bp,
-               '.new',
-               'New Voucher',
-               visible_when=has_a_role('super-admin',
-                                       'network-admin',
-                                       'gateway-admin'),
-               order=0,
-               category='Vouchers')
-def vouchers_new():
-    form = NewVoucherForm(flask.request.form)
-
-    choices = []
-
-    if current_user.has_role('gateway-admin'):
-        gateway = current_user.gateway
-        choices = [
-            [
-                current_user.gateway_id,
-                '%s - %s' % (gateway.network.title, gateway.title)
-            ]
-        ]
-    else:
-        if current_user.has_role('network-admin'):
-            networks = (Network.query
-                               .filter_by(id=current_user.network_id).all())
-        else:
-            networks = Network.query.all()
-
-        for network in networks:
-            for gateway in network.gateways:
-                choices.append([
-                    gateway.id,
-                    '%s - %s' % (network.title, gateway.title)
-                ])
-
-    form.gateway.choices = choices
-
-    if form.validate_on_submit():
-        voucher = Voucher()
-        form.populate_obj(voucher)
-
-        if current_user.has_role('gateway-admin'):
-            voucher.gateway_id = current_user.gateway_id
-
-        db.session.add(voucher)
-        db.session.commit()
-
-        return flask.redirect(flask.url_for('.vouchers_new',
-                                            code=voucher.code))
-
-    return flask.render_template('vouchers/new.html', form=form)
 
 
 @bp.route('/wifidog/login/', methods=['GET', 'POST'])
@@ -197,19 +145,28 @@ def wifidog_auth():
     return ("Auth: %s\nMessages: %s\n" % (auth.status, auth.messages), 200)
 
 
-@bp.route('/wifidog/portal/')
-def wifidog_portal():
+def _show_gateway(gw_id):
     voucher_token = flask.session.get('voucher_token')
     if voucher_token:
         voucher = Voucher.query.filter_by(token=voucher_token).first_or_404()
     else:
         voucher = None
-    gateway = (Gateway.query
-                      .filter_by(id=flask.request.args.get('gw_id'))
-                      .first_or_404())
+
+    gateway = Gateway.query.filter_by(id=gw_id).first_or_404()
+
     return flask.render_template('wifidog/portal.html',
                                  gateway=gateway,
                                  voucher=voucher)
+
+
+@bp.route('/gateways/<gw_id>')
+def gateways_show(gw_id):
+    return _show_gateway(gw_id)
+
+
+@bp.route('/wifidog/portal/')
+def wifidog_portal():
+    return _show_gateway(flask.request.args.get('gw_id'))
 
 
 @bp.route('/pay')
@@ -248,13 +205,39 @@ def pay_cancel():
 @bp.route('/')
 @login_required
 def home():
-    template = 'user'
-    for role in ROLES.keys():
-        if current_user.has_role(role):
-            template = role
-            break
+    metrics = []
 
-    return flask.render_template('homes/%s.html' % template)
+    if has_a_role('super-admin', 'network-admin', 'gateway-admin'):
+        where = [Condition('status', COMPARATORS['$eq'], 'active')]
+        active_count = VoucherResource.manager.instances(where=where).count()
+        all_count = VoucherResource.manager.instances().count()
+        count = '%s / %s' % (active_count, all_count)
+        metrics.append({
+            'title': 'Active Vouchers',
+            'value': count,
+            'label': 'Active %s' % p.plural('Voucher', count),
+        })
+        template = 'home/admin.html'
+    else:
+        template = 'home/user.html'
+
+    if has_a_role('super-admin', 'network-admin'):
+        count = GatewayResource.manager.instances().count()
+        metrics.append({
+            'title': 'Gateways',
+            'value': count,
+            'label': p.plural('Gateway', count),
+        })
+
+    if has_a_role('super-admin'):
+        count = NetworkResource.manager.instances().count()
+        metrics.append({
+            'title': 'Networks',
+            'value': count,
+            'label': p.plural('Network', count),
+        })
+
+    return flask.render_template(template, metrics=metrics)
 
 
 @bp.route('/config')

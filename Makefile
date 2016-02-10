@@ -15,7 +15,7 @@ bootstrap-tests:
 	python manage.py bootstrap_tests
 
 tests:
-	python tests/test_unit.py
+	python tests/test_website.py
 
 tests-webdriver:
 	python tests/test_webdriver.py
