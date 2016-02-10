@@ -22,7 +22,7 @@ networks = Blueprint('networks',
 @register_menu(networks,
                '.networks',
                'Networks',
-               visible_when=has_role('super-admin'),
+               visible_when=lambda: has_role('super-admin'),
                order=10,
                category='Networks')
 def networks_index():

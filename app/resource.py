@@ -196,7 +196,7 @@ def init_resources():
                           order=index,
                           endpoint_arguments_constructor=endpoint_arguments_constructor(resource),
                           expected_args=['resource_name'],
-                          visible_when=visible_when(resource),
+                          visible_when=lambda: visible_when(resource),
                           category=category)
 
             index = index + 10
