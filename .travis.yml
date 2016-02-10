@@ -35,3 +35,4 @@ cache:
     - $HOME/.ccache
     - $HOME/.npm
     - $HOME/.nvm
+    - $HOME/virtualenv
