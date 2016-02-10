@@ -59,7 +59,7 @@ def vouchers_new():
                     '%s - %s' % (network.title, gateway.title)
                 ])
 
-    form.gateway_id.choices = choices
+    form.gateway.choices = choices
 
     if form.validate_on_submit():
         voucher = Voucher()

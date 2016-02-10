@@ -9,10 +9,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 os.sys.path.insert(0, BASE_DIR)
 
 from app import create_app
-from app.commands import create_roles, create_user, create_network, create_gateway
-from app.models import db, users, Role
-from flask import current_app
-from flask.ext.security.utils import encrypt_password
+from app.models import db
 from lxml import etree
 from StringIO import StringIO
 
@@ -47,24 +44,11 @@ class TestCase(unittest.TestCase):
         os.unlink(self.filename)
 
     def get_html(self, response):
-        data = response.get_data()
         parser = etree.HTMLParser()
         return etree.parse(StringIO(response.get_data()), parser)
 
     def assertTitle(self, html, title):
         self.assertRegexpMatches(html.find('//title').text, r'^%s -' % title)
-
-    def create_user(self, email, password, role, network_id=None, gateway_id=None):
-        with self.app.test_request_context():
-            user = users.create_user(email=email, password=encrypt_password(password))
-
-            user.network_id = network_id
-            user.gateway_id = gateway_id
-
-            role = Role.query.filter_by(name=role).first_or_404()
-            user.roles.append(role)
-
-            db.session.commit()
 
     def login(self, email, password, follow_redirects=False):
         return self.client.post('/login', data=dict(email=email, password=password), follow_redirects=follow_redirects)
@@ -214,15 +198,6 @@ class TestCase(unittest.TestCase):
         vouchers = json.loads(response.data)
         self.assertEquals(4, len(vouchers))
 
-    def test_api_users_index_as_super(self):
-        self.login('super-admin@example.com', 'admin')
-
-        response = self.client.get('/api/users')
-        self.assertEquals(200, response.status_code)
-
-        users = json.loads(response.data)
-        self.assertEquals(7, len(users))
-
     def test_voucher_new_as_gateway(self):
         self.login('main-gateway1@example.com', 'admin')
 
@@ -230,7 +205,7 @@ class TestCase(unittest.TestCase):
         self.assertEquals(200, response.status_code)
 
         html = self.get_html(response)
-        options = html.findall('//select[@id="gateway_id"]/option')
+        options = html.findall('//select[@id="gateway"]/option')
 
         self.assertEquals(1, len(options))
         self.assertEquals('main-gateway1', options[0].get('value'))
@@ -242,7 +217,7 @@ class TestCase(unittest.TestCase):
         self.assertEquals(200, response.status_code)
 
         html = self.get_html(response)
-        options = html.findall('//select[@id="gateway_id"]/option')
+        options = html.findall('//select[@id="gateway"]/option')
 
         self.assertEquals(2, len(options))
 
@@ -256,7 +231,7 @@ class TestCase(unittest.TestCase):
         self.assertEquals(200, response.status_code)
 
         html = self.get_html(response)
-        options = html.findall('//select[@id="gateway_id"]/option')
+        options = html.findall('//select[@id="gateway"]/option')
 
         self.assertEquals(4, len(options))
 

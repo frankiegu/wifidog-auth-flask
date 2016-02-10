@@ -31,23 +31,19 @@ setup-test-env:
 development-install:
 	bundle install
 	pip install -r requirements.txt
-	npm install
 	npm prune
-	bower install
+	npm install
 	bower prune
-	cd bower_components/pure && npm install && node_modules/.bin/grunt
-	cd bower_components/zepto && npm install && MODULES="zepto ajax callbacks deferred event" npm run-script dist
+	bower install
 	gulp --dev
 
 production-install:
 	bundle install --without development --deployment --jobs=3 --retry=3
 	pip install -r requirements.txt
-	npm install
-	npm prune
-	bower install
-	bower prune
-	cd bower_components/pure && npm install && node_modules/.bin/grunt
-	cd bower_components/zepto && npm install && MODULES="zepto ajax callbacks deferred event" npm run-script dist
+	npm prune # --production removed (builds on production)
+	npm install # --production removed (builds on production)
+	bower prune # --production removed (builds on production)
+	bower install # --production removed (builds on production)
 	gulp
 
 db-migrate:

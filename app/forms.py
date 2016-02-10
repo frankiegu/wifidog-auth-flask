@@ -15,7 +15,6 @@ p = inflect.engine()
 class ResourceSelectField(QuerySelectField):
     def __init__(self, *args, **kwargs):
         super(ResourceSelectField, self).__init__(*args, **kwargs)
-
         singular = kwargs['_name']
         resource_class = singular[0].upper() + singular[1:] + 'Resource'
         self.resource = getattr(resources, resource_class)
@@ -121,7 +120,7 @@ def default_minutes():
 
 
 class NewVoucherForm(Form):
-    gateway_id = SelectField('Gateway')
+    gateway = ResourceSelectField('Gateway')
     minutes = IntegerField('Minutes',
                            [
                                validators.InputRequired(),
