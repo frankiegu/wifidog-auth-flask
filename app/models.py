@@ -79,6 +79,13 @@ class User(db.Model, UserMixin):
         UniqueConstraint('network_id', 'email'),
     )
 
+    @property
+    def name(self):
+        return '%s %s' % (self.given_name, self.family_name)
+
+    def ___repr__(self):
+        return self.name
+
 users = SQLAlchemyUserDatastore(db, User, Role)
 
 class Network(db.Model):
@@ -91,6 +98,9 @@ class Network(db.Model):
     ga_tracking_id = db.Column(db.String(20))
 
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+    def __repr__(self):
+        return '%s :: %s' % (self.id, self.title)
 
 class Gateway(db.Model):
     __tablename__ = 'gateways'
@@ -117,7 +127,7 @@ class Gateway(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def __repr__(self):
-        return self.title
+        return '%s :: %s' % (self.id, self.title)
 
 def record_change(f):
     def func(self, **kwargs):
@@ -223,6 +233,9 @@ class Voucher(db.Model):
     @property
     def available_actions(self):
         return available_actions(self.status, 'admin')
+
+    def __repr__(self):
+        return self.code
 
 class Auth(db.Model):
     __tablename__ = 'auths'

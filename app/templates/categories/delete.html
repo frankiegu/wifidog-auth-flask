@@ -22,16 +22,16 @@
         </colgroup>
         <thead>
             <tr>
-                <td class="checkbox"><input type="checkbox" class="select-all"></th>
-                <td class="id">ID</th>
-                <td class="title">Title</th>
-                <td class="description">Description</th>
-                <td class="created_at">Created At</th>
+                <th class="checkbox"></th>
+                <th class="id">ID</th>
+                <th class="title">Title</th>
+                <th class="description">Description</th>
+                <th class="created_at">Created At</th>
             </tr>
         </thead>
         <tbody>
             {% for instance in instances %}
-            <tr data-id={{ instance.id }}>
+            <tr data-id="{{ instance.id }}">
                 <td class="checkbox"><input type="checkbox" name="ids[]" value="{{ instance.id }}"></td>
                 <td class="id" data-label="ID"><a href="{{ url_for('.resource_edit', resource_name='categories', id=instance.id) }}">{{ instance.id }}</a></td>
                 <td class="title" data-label="Title"><a href="{{ url_for('.resource_edit', resource_name='categories', id=instance.id) }}">{{ instance.title }}</a></td>

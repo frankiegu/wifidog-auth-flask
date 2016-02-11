@@ -1,0 +1,26 @@
+{% if current_user.has_role('super-admin') %}
+<fieldset>
+    <legend>Owner Details</legend>
+
+    <div data-row-span="2">
+        <div data-field-span="1">
+            {{ render_field(form.network) }}
+        </div>
+        <div data-field-span="1">
+            {{ render_field(form.gateway) }}
+        </div>
+    </div>
+</fieldset>
+<br>
+{% elif current_user.has_role('network-admin') %}
+<fieldset>
+    <legend>Owner Details</legend>
+
+    <div data-row-span="1">
+        <div data-field-span="1">
+            {{ render_field(form.gateway) }}
+        </div>
+    </div>
+</fieldset>
+<br>
+{% endif %}

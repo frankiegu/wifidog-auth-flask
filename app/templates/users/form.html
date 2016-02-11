@@ -1,23 +1,24 @@
 {% from 'helpers/form.html' import render_field %}
 
-{{ form.original_id }}
-
 {% include 'layouts/network_and_gateway.html' %}
 
 <fieldset>
-    <legend>Category Details</legend>
+    <legend>User Details</legend>
 
     <div data-row-span="2">
         <div data-field-span="1">
-            {{ render_field(form.code) }}
+            {{ render_field(form.given_name) }}
         </div>
         <div data-field-span="1">
-            {{ render_field(form.title) }}
+            {{ render_field(form.family_name) }}
         </div>
     </div>
-    <div data-row-span="1">
+    <div data-row-span="2">
         <div data-field-span="1">
-            {{ render_field(form.description) }}
+            {{ render_field(form.email) }}
+        </div>
+        <div data-field-span="1">
+            {{ render_field(form.password) }}
         </div>
     </div>
 </fieldset>

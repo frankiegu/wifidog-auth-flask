@@ -5,12 +5,20 @@
 <fieldset>
     <legend>Voucher Details</legend>
 
+    {% if current_user.has_role('super-admin') or current_user.has_role('network-admin') %}
     <div data-row-span="2">
         <div data-field-span="1">
             {{ render_field(form.gateway) }}
         </div>
         <div data-field-span="1">
-            {{ render_field(form.minutes) }}
+            {{ render_field(form.minutes, value=config['VOUCHER_DEFAULT_MINUTES']) }}
         </div>
     </div>
+    {% else %}
+    <div data-row-span="1">
+        <div data-field-span="1">
+            {{ render_field(form.minutes, value=config['VOUCHER_DEFAULT_MINUTES']) }}
+        </div>
+    </div>
+{% endif %}
 </fieldset>

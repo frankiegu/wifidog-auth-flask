@@ -3,7 +3,8 @@ var es = require('event-stream'),
     gutil = require('gulp-util'),
     browserSync = require('browser-sync'),
     reload = browserSync.reload,
-    plugins = require('gulp-load-plugins')();
+    plugins = require('gulp-load-plugins')(),
+    _ = require('underscore');
 
 function errorHandler(error) {
     console.log(error);
@@ -90,8 +91,8 @@ gulp.task('serve', [ 'build' ], function() {
       proxy: 'localhost:8080'
     });
 
-    gulp.watch(Object.values(styles), [ 'styles' ]);
-    gulp.watch(ieScripts + siteScripts, [ 'scripts' ]);
+    gulp.watch(_.flatten(_.values(styles)), [ 'styles' ]);
+    gulp.watch(_.flatten(_.values(scripts)), [ 'scripts' ]);
     gulp.watch('app/templates/**/*.html', reload);
 });
 

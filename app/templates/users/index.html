@@ -2,12 +2,37 @@
 
 {% set title = 'Users' %}
 
-{% block head %}
-<!--[if lt IE 9]>
-<script>html5.addElements('users')</script>
-<![endif]-->
-{% endblock %}
-
 {% block content %}
-<users></users>
+<div id="{{ resource_name }}-index">
+    <form method="post" action="{{ url_for('resource.index', resource_name=resource_name) }}">
+
+    <div class="flakes-actions-bar">
+        {% include 'resources/actions.html' %}
+    </div>
+
+    <table class="flakes-table">
+        <colgroup>
+            <col span="1" style="width: 20px">
+        </colgroup>
+        <thead>
+            <tr>
+                <th class="checkbox"></th>
+                <th class="name">Name</th>
+                <th class="email">Email</th>
+                <th class="active">Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for instance in instances %}
+            <tr data-id="{{ instance.id }}">
+                <td class="checkbox"><input type="checkbox" name="ids" value="{{ instance.id }}"></td>
+                <td class="name" data-label="Name"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=instance.id) }}">{{ instance.name }}</a></td>
+                <td class="email" data-label="Email"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=instance.id) }}">{{ instance.email }}</a></td>
+                <td class="active" data-label="Active">{{ instance.active }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </form>
+</div>
 {% endblock %}

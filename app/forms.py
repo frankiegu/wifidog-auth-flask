@@ -1,14 +1,16 @@
 import inflect
 
 from app import resources
-from app.models import Network, Currency, Gateway, Voucher, Product, Category, db
+from app.models import Network, Currency, Gateway, Voucher, Product, Category, User, db
+from app.resources import GatewayResource, NetworkResource
 from app.utils import args_get
-from flask import current_app
+from flask import current_app, request
 from flask.ext.wtf import Form
 from wtforms import compat, fields, HiddenField, StringField, \
-        IntegerField, SelectField, validators
+        IntegerField, validators, widgets
 from wtforms.ext.sqlalchemy.orm import model_form, ModelConverterBase, \
         QuerySelectField, QuerySelectMultipleField
+from wtforms_components import SelectField
 
 p = inflect.engine()
 
@@ -25,6 +27,14 @@ class ResourceSelectField(QuerySelectField):
             self._object_list = list((compat.text_type(get_pk(obj)), obj) for obj in self.resource.manager.instances())
         return self._object_list
 
+
+class GatewaySelectField(SelectField):
+    def __init__(self, allow_blank=False, *args, **kwargs):
+        networks = NetworkResource.manager.instances()
+        super(GatewaySelectField, self).__init__(*args, **kwargs)
+        self.choices =  [[n.title, [[g.id, g.title] for g in n.gateways]] for n in networks]
+        if allow_blank:
+            self.choices = [['Gateways', [['', 'Not selected']]]] + self.choices
 
 def converts(*args):
     def _inner(func):
@@ -119,16 +129,6 @@ def default_minutes():
     return current_app.config.get('VOUCHER_DEFAULT_MINUTES')
 
 
-class NewVoucherForm(Form):
-    gateway = ResourceSelectField('Gateway')
-    minutes = IntegerField('Minutes',
-                           [
-                               validators.InputRequired(),
-                               validators.NumberRange(min=0),
-                           ],
-                           default=default_minutes)
-
-
 class BroadcastForm(Form):
     message = StringField('Message', [validators.InputRequired()])
 
@@ -163,10 +163,18 @@ CurrencyForm = None
 VoucherForm = None
 ProductForm = None
 CategoryForm = None
+UserForm = None
 
+class VoucherIndex(Form):
+    gateway_id = GatewaySelectField('Gateway', default=lambda: request.args.get('gateway_id'))
+    action = StringField(widget=widgets.SubmitInput())
+
+class ProductIndex(Form):
+    gateway_id = GatewaySelectField('Gateway', default=lambda: request.args.get('gateway_id'))
+    action = StringField(widget=widgets.SubmitInput())
 
 def init_forms():
-    global NetworkForm, GatewayForm, CurrencyForm, VoucherForm, ProductForm, CategoryForm
+    global NetworkForm, GatewayForm, CurrencyForm, VoucherForm, ProductForm, CategoryForm, UserForm
 
     converter = Converter()
 
@@ -204,6 +212,7 @@ def init_forms():
                              },
                              converter=converter,
                              exclude=['code', 'created_at', 'updated_at', 'status'])
+    VoucherForm.gateway = GatewaySelectField(allow_blank=False)
     VoucherForm.original_id = HiddenField()
 
     ProductForm = model_form(Product,
@@ -212,6 +221,7 @@ def init_forms():
                                  'id': {'label': 'ID'},
                              },
                              converter=converter)
+    ProductForm.gateway = GatewaySelectField()
     ProductForm.original_id = HiddenField()
 
     CategoryForm = model_form(Category,
@@ -222,3 +232,7 @@ def init_forms():
                              exclude=['sub_categories'],
                              converter=converter)
     CategoryForm.original_id = HiddenField()
+
+    UserForm = model_form(User,
+                             db.session,
+                             converter=converter)

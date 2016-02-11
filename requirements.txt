@@ -25,6 +25,7 @@ requests
 sauceclient
 selenium
 suds
+WTForms-Components
 
 # Python 2.6
 # ordereddict

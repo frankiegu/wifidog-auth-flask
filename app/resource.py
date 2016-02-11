@@ -39,32 +39,58 @@ def form_by_name(name):
     return getattr(forms, form_class)
 
 
+def index_by_name(name):
+    singular = p.singular_noun(name)
+    form_class = singular[0].upper() + singular[1:] + 'Index'
+    return getattr(forms, form_class)
+
+
 @resource_blueprint.route('/%s' % resource_name, methods=['GET', 'POST'])
 @login_required
 def index(resource_name):
     title = resource_name[0].upper() + resource_name[1:]
     resource = resource_by_name(resource_name)
+    index = index_by_name(resource_name)
 
     if flask.request.method == 'GET':
-        instances = resource.manager.instances().all()
-        return flask.render_template('%s/index.html' % resource_name,
-                                     resource_name=resource_name,
-                                     instances=instances)
-    else:
-        action = flask.request.form.get('action')
-        ids = flask.request.form.getlist('ids')
+        form = index(flask.request.args)
+    elif flask.request.method == 'POST':
+        form = index(flask.request.form)
 
-        if action == 'delete':
-            for id in ids:
-                resource.manager.delete_by_id(id)
-            flask.flash('%s deleted' % title, 'success')
-        elif action == 'edit':
-            return flask.redirect(flask.url_for('.bulk_edit',
-                                                resource_name=resource_name,
-                                                ids=ids))
+        if form.validate():
+            action = form.data.get('action')
+            ids = form.data.get('ids')
 
-    return flask.redirect(flask.url_for('.index',
-                                        resource_name=resource_name))
+            if action == 'delete':
+                for id in ids:
+                    resource.manager.delete_by_id(id)
+                flask.flash('%s deleted' % title, 'success')
+            elif action == 'edit':
+                return flask.redirect(flask.url_for('.bulk_edit',
+                                                    resource_name=resource_name,
+                                                    ids=ids))
+            elif action == 'filter':
+                kwargs = form.data
+                del kwargs['action']
+                return flask.redirect(flask.url_for('.index',
+                                      resource_name=resource_name,
+                                      **kwargs))
+
+        return flask.redirect(flask.url_for('.index',
+                                            resource_name=resource_name))
+
+    where = []
+    for key, value in flask.request.args.iteritems():
+        if key == 'action':
+            continue
+        if value != '':
+            where.append(Condition(key, COMPARATORS['$eq'], value))
+
+    instances = resource.manager.instances(where=where).all()
+    return flask.render_template('%s/index.html' % resource_name,
+                                 form=form,
+                                 resource_name=resource_name,
+                                 instances=instances)
 
 
 @resource_blueprint.route('/%s/<id>/edit' % resource_name,
@@ -77,8 +103,9 @@ def edit(resource_name, id):
 
     if (flask.request.method == 'POST' and
             flask.request.form.get('action') == 'delete'):
-        resource.manager.delete_by_id(id)
-        flask.flash('%s deleted' % title, 'success')
+        instance = resource.manager.read(id)
+        resource.manager.delete(instance)
+        flask.flash('%s %s deleted' % (title, instance), 'success')
         return flask.redirect(flask.url_for('.index',
                                             resource_name=resource_name))
 
@@ -88,7 +115,7 @@ def edit(resource_name, id):
     if flask.request.method == 'POST':
         if form.validate():
             resource.manager.update(instance, form.data)
-            flask.flash('%s updated' % title, 'success')
+            flask.flash('%s %s updated' % (title, instance), 'success')
             return flask.redirect(flask.url_for('.index',
                                                 resource_name=resource_name))
 
@@ -109,8 +136,8 @@ def new(resource_name):
     form = form_by_name(resource_name)(flask.request.form, instance)
 
     if flask.request.method == 'POST' and form.validate():
-        resource.manager.create(form.data)
-        flask.flash('%s created' % title, 'success')
+        instance = resource.manager.create(form.data)
+        flask.flash('%s %s created' % (title, instance), 'success')
         return flask.redirect(flask.url_for('.index',
                                             resource_name=resource_name))
 
@@ -156,7 +183,7 @@ def bulk_edit(resource_name):
             return flask.redirect(flask.url_for('.index',
                                                 resource_name=resource_name))
 
-    return flask.render_template('%s/bulk_edit.html' % resource_name,
+    return flask.render_template('resources/bulk_edit.html',
                                  title='Bulk Edit %s' % title,
                                  forms=forms,
                                  resource_name=resource_name,

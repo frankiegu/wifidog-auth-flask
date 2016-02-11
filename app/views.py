@@ -2,7 +2,7 @@ import flask
 import inflect
 import jinja2
 
-from app.forms import LoginVoucherForm, NewVoucherForm
+from app.forms import LoginVoucherForm
 from app.models import Auth, Gateway, Network, Ping, Voucher, \
         generate_token, db
 from app.payu import get_transaction, set_transaction, capture
@@ -157,11 +157,6 @@ def _show_gateway(gw_id):
     return flask.render_template('wifidog/portal.html',
                                  gateway=gateway,
                                  voucher=voucher)
-
-
-@bp.route('/gateways/<gw_id>')
-def gateways_show(gw_id):
-    return _show_gateway(gw_id)
 
 
 @bp.route('/wifidog/portal/')

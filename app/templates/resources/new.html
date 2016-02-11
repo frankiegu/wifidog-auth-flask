@@ -1,5 +1,7 @@
 {% extends 'layouts/default.html' %}
 
+{% from 'helpers/form.html' import render_field %}
+
 {% block content %}
 <div id="{{ resource_name }}-new">
     <form method="post" class="grid-form">
