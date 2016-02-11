@@ -363,6 +363,18 @@ class Currency(db.Model):
     prefix = db.Column(db.String(10))
     suffix = db.Column(db.String(10))
 
+    def __repr__(self):
+        return self.title
+
+    def render(self, price):
+        output = ''
+        if self.prefix is not None:
+            output += self.prefix
+        output += '%.2f' % price
+        if self.suffix is not None:
+            output += self.suffix
+        return output
+
 product_categories = db.Table('product_categories',
     db.Column('product_id', db.Integer, db.ForeignKey('products.id')),
     db.Column('category_id', db.Integer, db.ForeignKey('categories.id')),
@@ -415,10 +427,10 @@ class Product(db.Model):
 
     description = db.Column(db.UnicodeText)
 
-    currency_id = db.Column(db.String(3), db.ForeignKey('currencies.id', onupdate='cascade'))
+    currency_id = db.Column(db.String(3), db.ForeignKey('currencies.id', onupdate='cascade'), nullable=False)
     currency = db.relationship(Currency, backref=backref('products', lazy='dynamic'))
 
-    price = db.Column(db.Integer) # Cents
+    price = db.Column(db.Integer, nullable=False) # Cents
 
     created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.DateTime, onupdate=datetime.datetime.utcnow)

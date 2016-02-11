@@ -3,22 +3,27 @@
 {{ form.original_id }}
 
 <fieldset>
-    <legend>Currency Details</legend>
+    <legend>Product Details</legend>
 
     <div data-row-span="2">
         <div data-field-span="1">
-            {{ render_field(form.id) }}
+            {{ render_field(form.code) }}
         </div>
         <div data-field-span="1">
             {{ render_field(form.title) }}
         </div>
     </div>
+    <div data-row-span="1">
+        <div data-field-span="1">
+            {{ render_field(form.description) }}
+        </div>
+    </div>
     <div data-row-span="2">
         <div data-field-span="1">
-            {{ render_field(form.prefix) }}
+            {{ render_field(form.currency) }}
         </div>
         <div data-field-span="1">
-            {{ render_field(form.suffix) }}
+            {{ render_field(form.price) }}
         </div>
     </div>
 </fieldset>

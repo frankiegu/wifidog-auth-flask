@@ -18,20 +18,22 @@ function concatScripts(src, dest) {
 
 function concatStyles(src, dest) {
     return es.concat(
-			gulp.src(src.filter(function(s) { return /\.(scss|sass)$/.test(s); })).pipe(plugins.sass()),
-			gulp.src(src.filter(function(s) { return /\.less$/.test(s); })).pipe(plugins.less())
-		)
-		.pipe(plugins.concat(dest))
-		.on('error', errorHandler);
+		plugins.rubySass(src.filter(function(s) { return /\.(scss|sass)$/.test(s); }), {
+			bundleExec: true
+		}),
+		gulp.src(src.filter(function(s) { return /\.less$/.test(s); })).pipe(plugins.less())
+	)
+	.pipe(plugins.concat(dest))
+	.on('error', errorHandler);
 }
 
 var isProduction = true,
     styles = {
     	'screen.min.css': [
-			'node_modules/open-iconic/font/css/open-iconic.css',
-			'bower_components/gridforms/gridforms/gridforms.css',
+			'node_modules/open-iconic/font/css/open-iconic.scss',
+			'bower_components/gridforms/gridforms/gridforms.sass',
 			'app/assets/styles/all.sass',
-			'app/assets/styles/site.scss'
+			'app/assets/styles/site.sass'
 		]
     },
 	scripts = {
@@ -88,7 +90,7 @@ gulp.task('serve', [ 'build' ], function() {
       proxy: 'localhost:8080'
     });
 
-    gulp.watch(vendorStyles + siteStyles, [ 'styles' ]);
+    gulp.watch(Object.values(styles), [ 'styles' ]);
     gulp.watch(ieScripts + siteScripts, [ 'scripts' ]);
     gulp.watch('app/templates/**/*.html', reload);
 });

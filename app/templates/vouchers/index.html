@@ -3,14 +3,9 @@
 {% set title = 'Vouchers' %}
 
 {% block content %}
-<h1>Vouchers</h1>
-
-<div id="vouchers-index">
+<div id="{{ resource_name}}-index">
     <div class="flakes-actions-bar">
-        <a class="action button-gray smaller right" href="/new-voucher">
-            <span class="oi" data-glyph="file" title="New Voucher" aria-hidden="true"></span>
-            New Voucher
-        </a>
+        {% include 'resources/actions.html' %}
     </div>
 
     {% if instances %}
@@ -21,32 +16,32 @@
         <thead>
             <tr>
                 <th class="checkbox"></th>
-                <th>Code</th>
-                <th>Name</th>
-                <th>S</th>
-                <th>Times</th>
-                <th class="right">Minutes Left</th>
-                <th style="text-align:right">Traffic (MB)</th>
+                <th class="code">Code</th>
+                <th class="name">Name</th>
+                <th class="status">S</th>
+                <th class="times">Times</th>
+                <th class="minutes">Minutes Left</th>
+                <th class="traffic">Traffic (MB)</th>
             </tr>
         </thead>
-        <tbody class="list">
+        <tbody>
             {% for instance in instances %}
-            <tr data-id={{ instance.id }}>
+            <tr data-id="{{ instance.id }}">
                 <td><input type="checkbox"></td>
                 <td class="code" data-label="Code">{{ instance.code }}</td>
                 <td class="name" data-label="Name">{{ instance.name or '-' }}</td>
                 <td class="status" data-label="Status"><span class="oi" data-glyph="{{ status_icons[instance.status] }}" title="{{ instance.status }}" aria-hidden="true"></span></td>
-                <td data-label="Times">
-                    {{ instance.created_at.strftime('%H:%M:%S') }}
+                <td class="times" data-label="Times">
+                    {{ instance.created_at.strftime('%H:%M') }}
                 </td>
-                <td class="right" data-label="Minutes Left">
+                <td class="minutes" data-label="Minutes Left">
                     {% if instance.status == 'active' %}
                     {{ instance.time_left }} /
                     {% else %}
                     {% endif %}
                     {{ instance.minutes }}
                 </td>
-                <td data-label="Traffic" style="text-align:right">{{ instance.incoming | bytes }} in; {{ instance.outgoing | bytes }} out; {{ (instance.incoming + instance.outgoing) | bytes }} both</td>
+                <td class="traffic" data-label="Traffic">{{ instance.incoming | bytes }} in; {{ instance.outgoing | bytes }} out; {{ (instance.incoming + instance.outgoing) | bytes }} both</td>
             </tr>
             {% endfor %}
         </tbody>

@@ -1,0 +1,13 @@
+{% extends 'layouts/default.html' %}
+
+{% block content %}
+<div id="{{ resource_name }}-new">
+    <form method="post" class="grid-form">
+        {% include '%s/form.html' % resource_name %}
+
+        <br>
+
+        <button type="submit" class="button-primary">Save</button>
+    </form>
+</div>
+{% endblock %}

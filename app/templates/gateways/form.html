@@ -1,4 +1,4 @@
-{% from 'helpers/form.html' import render_grid_field %}
+{% from 'helpers/form.html' import render_field %}
 
 {{ form.original_id }}
 
@@ -7,15 +7,15 @@
 
     <div data-row-span="2">
         <div data-field-span="1">
-            {{ render_grid_field(form.id) }}
+            {{ render_field(form.id) }}
         </div>
         <div data-field-span="1">
-            {{ render_grid_field(form.title) }}
+            {{ render_field(form.title) }}
         </div>
     </div>
     <div data-row-span="1">
         <div data-field-span="1">
-            {{ render_grid_field(form.description) }}
+            {{ render_field(form.description) }}
         </div>
     </div>
 </fieldset>

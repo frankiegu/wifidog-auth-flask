@@ -1,0 +1,13 @@
+<button type="submit" class="action left" name="action" value="delete">
+    <b class="oi" data-glyph="trash" title="Delete" aria-hidden="true"></b>
+    Delete
+</button>
+<button type="submit" class="action left" name="action" value="edit">
+    <b class="oi" data-glyph="pencil" title="Edit" aria-hidden="true"></b>
+    Edit
+</button>
+
+<a class="action right" href="{{ url_for('resource.new', resource_name=resource_name) }}">
+    <b class="oi" data-glyph="file" title="New" aria-hidden="true"></b>
+    New
+</a>

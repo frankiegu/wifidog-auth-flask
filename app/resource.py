@@ -48,6 +48,7 @@ def index(resource_name):
     if flask.request.method == 'GET':
         instances = resource.manager.instances().all()
         return flask.render_template('%s/index.html' % resource_name,
+                                     resource_name=resource_name,
                                      instances=instances)
     else:
         action = flask.request.form.get('action')
@@ -91,9 +92,10 @@ def edit(resource_name, id):
             return flask.redirect(flask.url_for('.index',
                                                 resource_name=resource_name))
 
-    return flask.render_template('%s/edit.html' % resource_name,
+    return flask.render_template('resources/edit.html',
                                  title='Edit %s' % title,
                                  form=form,
+                                 resource_name=resource_name,
                                  instance=instance)
 
 
@@ -112,9 +114,10 @@ def new(resource_name):
         return flask.redirect(flask.url_for('.index',
                                             resource_name=resource_name))
 
-    return flask.render_template('%s/edit.html' % resource_name,
+    return flask.render_template('resources/new.html',
                                  title='New %s' % title,
                                  form=form,
+                                 resource_name=resource_name,
                                  instance=instance)
 
 
@@ -156,6 +159,7 @@ def bulk_edit(resource_name):
     return flask.render_template('%s/bulk_edit.html' % resource_name,
                                  title='Bulk Edit %s' % title,
                                  forms=forms,
+                                 resource_name=resource_name,
                                  instances=instances)
 
 def endpoint_arguments_constructor(resource):
@@ -182,11 +186,11 @@ def init_resources():
 
     index = 0
 
-    def visible_when(resource):
-        return has_a_role(*roles_by_resource[resource])
-
     for resource, category in resources.iteritems():
         for action, defn in endpoints.iteritems():
+            def visible_when(action=action, resource=resource):
+                return has_a_role(*roles_by_resource[resource])
+
             (path, title) = defn
             endpoint = 'resource.%s' % action
             path = path % {'resource': resource, 'action': action}
@@ -196,7 +200,6 @@ def init_resources():
                           order=index,
                           endpoint_arguments_constructor=endpoint_arguments_constructor(resource),
                           expected_args=['resource_name'],
-                          visible_when=lambda: visible_when(resource),
+                          visible_when=visible_when,
                           category=category)
-
             index = index + 10

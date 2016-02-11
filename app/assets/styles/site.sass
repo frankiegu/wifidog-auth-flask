@@ -1,0 +1,39 @@
+@import utils/general
+@import components/buttons
+
+=button-primary
+  +button(blue)
+
+.button-primary
+  +button-primary
+
+=button-secondary
+  +button(gray)
+
+.button-secondary
+  +button-secondary
+
+.flakes-actions-bar
+  .left
+    +button-secondary
+  .right
+    +button-primary
+  .action
+    height: (36px * 0.8)
+    line-height: (36px * 0.8) - 1px
+    padding: 0 10px
+    font-size: 80%
+
+.flakes-table thead th
+  text-align: left
+  padding: 0 10px
+
+#vouchers-index table
+  .status
+    text-align: center
+  .times, .minutes, .traffic
+    text-align: right
+
+#products-index table
+  .price
+    text-align: right

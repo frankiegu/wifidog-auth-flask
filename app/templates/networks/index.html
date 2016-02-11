@@ -3,43 +3,41 @@
 {% set title = 'Networks' %}
 
 {% block content %}
-<h1>Networks</h1>
+<div id="{{ resource_name }}-index">
+    <form method="post" action="{{ url_for('resource.index', resource_name=resource_name) }}">
 
-<div id="networks-index">
-    <form method="post" action="/networks">
     <div class="flakes-actions-bar">
-        <button type="submit" class="action button-gray smaller left" name="action" value="delete">Delete</button>
-        <button type="submit" class="action button-gray smaller left" name="action" value="edit">Edit</button>
-        <a class="action button-gray smaller right" href="/networks/new">
-            New Network
-        </a>
+        {% include 'resources/actions.html' %}
     </div>
 
-    <table if={ networks.length } class="flakes-table">
+    {% if instances %}
+    <table class="flakes-table">
         <colgroup>
             <col span="1" style="width: 20px">
         </colgroup>
         <thead>
             <tr>
-                <td class="checkbox"></th>
-                <td class="id">ID</th>
-                <td class="title">Title</th>
-                <td class="description">Description</th>
-                <td class="created_at">Created At</th>
+                <th class="checkbox"></th>
+                <th class="id">ID</th>
+                <th class="title">Title</th>
+                <th class="description">Description</th>
+                <th class="created_at">Created At</th>
             </tr>
         </thead>
         <tbody>
             {% for instance in instances %}
-            <tr data-id={{ instance.id }}>
+            <tr data-id="{{ instance.id }}">
                 <td class="checkbox"><input type="checkbox" name="ids" value="{{ instance.id }}"></td>
-                <td class="id" data-label="ID"><a href="{{ url_for('resource.edit', resource_name='networks', id=instance.id) }}">{{ instance.id }}</a></td>
-                <td class="title" data-label="Title"><a href="{{ url_for('resource.edit', resource_name='networks', id=instance.id) }}">{{ instance.title }}</a></td>
+                <td class="id" data-label="ID"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=instance.id) }}">{{ instance.id }}</a></td>
+                <td class="title" data-label="Title"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=instance.id) }}">{{ instance.title }}</a></td>
                 <td class="description" data-label="Description">{{ instance.description }}</td>
                 <td class="created_at" data-label="Created At">{{ instance.created_at.strftime('%c') }}</td> 
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
+
     </form>
 </div>
 {% endblock %}

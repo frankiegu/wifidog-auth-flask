@@ -1,0 +1,45 @@
+{% extends 'layouts/default.html' %}
+
+{% set title = 'Networks' %}
+
+{% block content %}
+<h1>Networks</h1>
+
+<div id="networks-index">
+    <div class="flakes-actions-bar">
+        <a class="action left" href="/networks/delete">
+            Delete
+        </a>
+        <a class="action right" href="/networks/new">
+            New Network
+        </a>
+    </div>
+
+    {% if instances %}
+    <table class="flakes-table">
+        <colgroup>
+            <col span="1" style="width: 20px">
+        </colgroup>
+        <thead>
+            <tr>
+                <td class="checkbox"><input type="checkbox" class="select-all"></th>
+                <td class="id">ID</th>
+                <td class="title">Title</th>
+                <td class="description">Description</th>
+                <td class="created_at">Created At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for instance in instances %}
+            <tr data-id={{ instance.id }}>
+                <td class="checkbox"><input type="checkbox" name="ids[]" value="{{ instance.id }}"></td>
+                <td class="id" data-label="ID"><a href="{{ url_for('.resource_edit', resource_name='categories', id=instance.id) }}">{{ instance.id }}</a></td>
+                <td class="title" data-label="Title"><a href="{{ url_for('.resource_edit', resource_name='categories', id=instance.id) }}">{{ instance.title }}</a></td>
+                <td class="description" data-label="Description">{{ instance.description }}</td>
+                <td class="created_at" data-label="Created At">{{ instance.created_at.strftime('%c') }}</td> 
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

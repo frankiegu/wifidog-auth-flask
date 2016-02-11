@@ -219,5 +219,6 @@ def init_forms():
                              field_args={
                                  'id': {'label': 'ID'},
                              },
+                             exclude=['sub_categories'],
                              converter=converter)
     CategoryForm.original_id = HiddenField()

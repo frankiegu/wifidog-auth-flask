@@ -6,7 +6,7 @@ from app.forms import LoginVoucherForm, NewVoucherForm
 from app.models import Auth, Gateway, Network, Ping, Voucher, \
         generate_token, db
 from app.payu import get_transaction, set_transaction, capture
-from app.resources import GatewayResource, NetworkResource, VoucherResource
+from app.resources import GatewayResource, NetworkResource, VoucherResource, UserResource
 from app.ext import influx_db
 from app.signals import voucher_logged_in
 from app.utils import has_a_role
@@ -217,6 +217,14 @@ def home():
             'value': count,
             'label': 'Active %s' % p.plural('Voucher', count),
         })
+
+        count = UserResource.manager.instances().count()
+        metrics.append({
+            'title': 'User Accounts',
+            'value': count,
+            'label': p.plural('User', count),
+        })
+
         template = 'home/admin.html'
     else:
         template = 'home/user.html'

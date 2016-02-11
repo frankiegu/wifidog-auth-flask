@@ -3,39 +3,34 @@
 {% set title = 'Products' %}
 
 {% block content %}
-<h1>Products</h1>
+<div id="{{ resource_name }}-index">
+    <form method="post" action="{{ url_for('resource.index', resource_name=resource_name) }}">
 
-<div id="products-index">
-    <form method="post" action="/products">
     <div class="flakes-actions-bar">
-        <button type="submit" class="action button-gray smaller left" name="action" value="delete">Delete</button>
-        <button type="submit" class="action button-gray smaller left" name="action" value="edit">Edit</button>
-        <a class="action button-gray smaller right" href="/products/new">
-            New Product
-        </a>
+        {% include 'resources/actions.html' %}
     </div>
 
-    <table if={ products.length } class="flakes-table">
+    <table class="flakes-table">
         <colgroup>
             <col span="1" style="width: 20px">
         </colgroup>
         <thead>
             <tr>
-                <td class="checkbox"></th>
-                <td class="id">ID</th>
-                <td class="title">Title</th>
-                <td class="description">Description</th>
-                <td class="created_at">Created At</th>
+                <th class="checkbox"></th>
+                <th class="id">ID</th>
+                <th class="title">Title</th>
+                <th class="description">Description</th>
+                <th class="price">Price</th>
             </tr>
         </thead>
         <tbody>
             {% for instance in instances %}
-            <tr data-id={{ instance.id }}>
+            <tr data-id="{{ instance.id }}">
                 <td class="checkbox"><input type="checkbox" name="ids" value="{{ instance.id }}"></td>
-                <td class="id" data-label="ID"><a href="{{ url_for('resource.edit', resource_name='products', id=instance.id) }}">{{ instance.id }}</a></td>
-                <td class="title" data-label="Title"><a href="{{ url_for('resource.edit', resource_name='products', id=instance.id) }}">{{ instance.title }}</a></td>
+                <td class="id" data-label="ID"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=instance.id) }}">{{ instance.id }}</a></td>
+                <td class="title" data-label="Title"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=instance.id) }}">{{ instance.title }}</a></td>
                 <td class="description" data-label="Description">{{ instance.description }}</td>
-                <td class="created_at" data-label="Created At">{{ instance.created_at.strftime('%c') }}</td> 
+                <td class="price" data-label="Price">{{ instance.currency.render(instance.price) }}</td> 
             </tr>
             {% endfor %}
         </tbody>

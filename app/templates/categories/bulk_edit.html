@@ -1,0 +1,16 @@
+{% extends 'layouts/default.html' %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<br>
+
+<form method="post" class="grid-form">
+    {% for form in forms %}
+    {% include 'categories/form.html' %}
+    <br>
+    {% endfor %}
+
+    <button type="submit">Update</button>
+</form>
+{% endblock %}

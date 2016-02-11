@@ -1,4 +1,4 @@
-{% from 'helpers/form.html' import render_grid_field %}
+{% from 'helpers/form.html' import render_field %}
 
 {{ form.original_id }}
 
@@ -7,10 +7,10 @@
 
     <div data-row-span="2">
         <div data-field-span="1">
-            {{ render_grid_field(form.gateway, widget=[]) }}
+            {{ render_field(form.gateway) }}
         </div>
         <div data-field-span="1">
-            {{ render_grid_field(form.minutes) }}
+            {{ render_field(form.minutes) }}
         </div>
     </div>
 </fieldset>
