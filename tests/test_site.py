@@ -16,16 +16,19 @@ from StringIO import StringIO
 with open(BASE_DIR + '/data/tests.db', 'r') as tests_db:
     content = tests_db.read()
 
-class TestWebsite(unittest.TestCase):
+class TestSite(unittest.TestCase):
     def __init__(self, *args, **kwargs):
-        super(TestWebsite, self).__init__(*args, **kwargs)
+        super(TestSite, self).__init__(*args, **kwargs)
 
     def setUp(self):
         self.fd, self.filename = tempfile.mkstemp()
         os.write(self.fd, content)
 
         config = {
+            'DEBUG': False,
+            'TESTING': True,
             'SQLALCHEMY_DATABASE_URI': 'sqlite:///' + self.filename,
+            'WTF_CSRF_ENABLED': False,
         }
 
         self.app = create_app(config)
@@ -207,8 +210,7 @@ class TestWebsite(unittest.TestCase):
         html = self.get_html(response)
         options = html.findall('//select[@id="gateway"]/option')
 
-        self.assertEquals(1, len(options))
-        self.assertEquals('main-gateway1', options[0].get('value'))
+        self.assertEquals(0, len(options))
 
     def test_voucher_new_as_network(self):
         self.login('main-network@example.com', 'admin')

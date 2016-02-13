@@ -34,7 +34,7 @@ class GatewaySelectField(SelectField):
         super(GatewaySelectField, self).__init__(*args, **kwargs)
         self.choices =  [[n.title, [[g.id, g.title] for g in n.gateways]] for n in networks]
         if allow_blank:
-            self.choices = [['Gateways', [['', 'Not selected']]]] + self.choices
+            self.choices = [['All Networks', [['', 'All Gateways']]]] + self.choices
 
 def converts(*args):
     def _inner(func):
@@ -173,6 +173,10 @@ class ProductIndex(Form):
     gateway_id = GatewaySelectField('Gateway', default=lambda: request.args.get('gateway_id'))
     action = StringField(widget=widgets.SubmitInput())
 
+class CategoryIndex(Form):
+    gateway_id = GatewaySelectField('Gateway', default=lambda: request.args.get('gateway_id'))
+    action = StringField(widget=widgets.SubmitInput())
+
 def init_forms():
     global NetworkForm, GatewayForm, CurrencyForm, VoucherForm, ProductForm, CategoryForm, UserForm
 
@@ -220,7 +224,8 @@ def init_forms():
                              field_args={
                                  'id': {'label': 'ID'},
                              },
-                             converter=converter)
+                             converter=converter,
+                             exclude=['order_items', 'categories'])
     ProductForm.gateway = GatewaySelectField()
     ProductForm.original_id = HiddenField()
 
@@ -229,7 +234,7 @@ def init_forms():
                              field_args={
                                  'id': {'label': 'ID'},
                              },
-                             exclude=['sub_categories'],
+                             exclude=['status', 'sub_categories'],
                              converter=converter)
     CategoryForm.original_id = HiddenField()
 

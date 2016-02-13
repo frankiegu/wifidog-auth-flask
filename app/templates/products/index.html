@@ -6,6 +6,18 @@
 <div id="{{ resource_name }}-index">
     <form method="post" action="{{ url_for('resource.index', resource_name=resource_name) }}">
 
+    <div class="flakes-search">
+        <input type="search" class="search-box" placeholder="Search" autofocus>
+        {% if current_user.has_role('super-admin') or current_user.has_role('network-admin') %}
+        <div class="filters">
+            <div class="filter-select">
+                {{ form.gateway_id }}
+                <button type="submit" class="button-primary" name="action" value="filter">Filter</button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
     <div class="flakes-actions-bar">
         {% include 'resources/actions.html' %}
     </div>

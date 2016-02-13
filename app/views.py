@@ -76,27 +76,21 @@ def wifidog_ping():
     db.session.add(ping)
     db.session.commit()
 
-    def generate_point(measurement):
-        return {
-            "measurement": measurement,
+    fields = dict((attr, getattr(ping, attr)) for attr in ['sys_uptime', 'sys_memfree', 'sys_load', 'wifidog_uptime'])
+
+    points = [
+        {
+            "measurement": "ping",
             "tags": {
-                "source": "ping",
                 "network_id": ping.gateway.network_id,
                 "gateway_id": ping.gateway_id,
                 "user_agent": ping.user_agent,
             },
             "time": ping.created_at,
-            "fields": {
-                "value": getattr(ping, measurement),
-            }
+            "fields": fields
         }
+    ]
 
-    points = [generate_point(m) for m in [
-        'sys_uptime',
-        'sys_memfree',
-        'sys_load',
-        'wifidog_uptime'
-    ]]
     influx_db.connection.write_points(points)
 
     return ('Pong', 200)
@@ -120,11 +114,10 @@ def wifidog_auth():
     db.session.add(auth)
     db.session.commit()
 
-    def generate_point(measurement):
-        return {
-            "measurement": 'auth_%s' % measurement,
+    points = [
+        {
+            "measurement": "auth",
             "tags": {
-                "source": "auth",
                 "network_id": auth.gateway.network_id,
                 "gateway_id": auth.gateway_id,
                 "user_agent": auth.user_agent,
@@ -135,11 +128,13 @@ def wifidog_auth():
             },
             "time": auth.created_at,
             "fields": {
-                "value": getattr(auth, measurement),
+                "incoming": auth.incoming,
+                "outgoing": auth.outgoing,
+                "both": auth.incoming + auth.outgoing
             }
         }
+    ]
 
-    points = [generate_point(m) for m in ['incoming', 'outgoing']]
     influx_db.connection.write_points(points)
 
     return ("Auth: %s\nMessages: %s\n" % (auth.status, auth.messages), 200)

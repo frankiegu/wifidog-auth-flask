@@ -27,6 +27,7 @@ MENU_CATEGORY_ORDER = [
         'System',
 ]
 PORT = 8080
+POTION_DEFAULT_PER_PAGE = 10
 PUSH_ENABLED = False
 SECRET_KEY = os.environ.get('SECRET_KEY', 'secret')
 SECURITY_PASSWORD_HASH = 'sha512_crypt'

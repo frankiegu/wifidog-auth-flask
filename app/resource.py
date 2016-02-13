@@ -4,7 +4,7 @@ import inflect
 from app import forms, resources
 from app.utils import has_a_role
 
-from flask import Blueprint
+from flask import Blueprint, current_app
 
 from flask.ext.menu import current_menu
 from flask.ext.potion.instances import Condition, COMPARATORS
@@ -45,52 +45,39 @@ def index_by_name(name):
     return getattr(forms, form_class)
 
 
-@resource_blueprint.route('/%s' % resource_name, methods=['GET', 'POST'])
+@resource_blueprint.route('/%s' % resource_name, methods=['GET'])
 @login_required
 def index(resource_name):
     title = resource_name[0].upper() + resource_name[1:]
     resource = resource_by_name(resource_name)
-    index = index_by_name(resource_name)
 
-    if flask.request.method == 'GET':
-        form = index(flask.request.args)
-    elif flask.request.method == 'POST':
-        form = index(flask.request.form)
+    action = flask.request.args.get('action')
 
-        if form.validate():
-            action = form.data.get('action')
-            ids = form.data.get('ids')
-
-            if action == 'delete':
-                for id in ids:
-                    resource.manager.delete_by_id(id)
-                flask.flash('%s deleted' % title, 'success')
-            elif action == 'edit':
-                return flask.redirect(flask.url_for('.bulk_edit',
-                                                    resource_name=resource_name,
-                                                    ids=ids))
-            elif action == 'filter':
-                kwargs = form.data
-                del kwargs['action']
-                return flask.redirect(flask.url_for('.index',
-                                      resource_name=resource_name,
-                                      **kwargs))
-
-        return flask.redirect(flask.url_for('.index',
-                                            resource_name=resource_name))
+    if action in ['delete', 'edit']:
+        ids = flask.request.args.getlist('ids')
+        return flask.redirect(flask.url_for('.bulk_%s' % action,
+                                            resource_name=resource_name,
+                                            ids=ids))
 
     where = []
     for key, value in flask.request.args.iteritems():
-        if key == 'action':
+        if key in ['action', 'page', 'ids']:
             continue
         if value != '':
             where.append(Condition(key, COMPARATORS['$eq'], value))
 
-    instances = resource.manager.instances(where=where).all()
+    pagination = resource.manager.paginated_instances(int(flask.request.args.get('page', 1)),
+                                                      current_app.config['POTION_DEFAULT_PER_PAGE'],
+                                                      where=where)
+
+    filters = {
+        'gateway': forms.ResourceSelectField(_name='gateways'),
+    }
+
     return flask.render_template('%s/index.html' % resource_name,
-                                 form=form,
+                                 filters=filters,
                                  resource_name=resource_name,
-                                 instances=instances)
+                                 pagination=pagination)
 
 
 @resource_blueprint.route('/%s/<id>/edit' % resource_name,

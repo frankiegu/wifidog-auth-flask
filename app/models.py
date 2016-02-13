@@ -422,6 +422,9 @@ class Category(db.Model):
             UniqueConstraint('network_id', 'gateway_id', 'parent_id', 'title'),
     )
 
+    def __repr__(self):
+        return '%s :: %s' % (self.code, self.title)
+
 class Product(db.Model):
     __tablename__ = 'products'
 

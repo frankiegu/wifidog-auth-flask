@@ -6,11 +6,23 @@
 <div id="{{ resource_name }}-index">
     <form method="post" action="{{ url_for('resource.index', resource_name=resource_name) }}">
 
+    <div class="flakes-search">
+        <input type="search" class="search-box" placeholder="Search" autofocus>
+        {% if current_user.has_role('super-admin') or current_user.has_role('network-admin') %}
+        <div class="filters">
+            <div class="filter-select">
+                {{ form.gateway_id }}
+                <button type="submit" class="button-primary" name="action" value="filter">Filter</button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
     <div class="flakes-actions-bar">
         {% include 'resources/actions.html' %}
     </div>
 
-    {% if instances %}
+    {% if pagination.items %}
     <table class="flakes-table">
         <colgroup>
             <col span="1" style="width: 20px">
@@ -21,16 +33,15 @@
                 <td class="id">ID</th>
                 <td class="title">Title</th>
                 <td class="description">Description</th>
-                <td class="created_at">Created At</th>
             </tr>
         </thead>
         <tbody>
-            {% for instance in instances %}
-            <tr data-id={{ instance.id }}>
-                <td class="checkbox"><input type="checkbox" name="ids" value="{{ instance.id }}"></td>
-                <td class="id" data-label="ID"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=instance.id) }}">{{ instance.id }}</a></td>
-                <td class="title" data-label="Title"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=instance.id) }}">{{ instance.title }}</a></td>
-                <td class="description" data-label="Description">{{ instance.description }}</td>
+            {% for item in pagination.items %}
+            <tr data-id={{ item.id }}>
+                <td class="checkbox"><input type="checkbox" name="ids" value="{{ item.id }}"></td>
+                <td class="id" data-label="ID"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=item.id) }}">{{ item.id }}</a></td>
+                <td class="title" data-label="Title"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=item.id) }}">{{ item.title }}</a></td>
+                <td class="description" data-label="Description">{{ item.description }}</td>
             </tr>
             {% endfor %}
         </tbody>
