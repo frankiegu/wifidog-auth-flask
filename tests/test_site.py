@@ -219,7 +219,7 @@ class TestSite(unittest.TestCase):
         self.assertEquals(200, response.status_code)
 
         html = self.get_html(response)
-        options = html.findall('//select[@id="gateway"]/option')
+        options = html.findall('//select[@id="gateway"]//option')
 
         self.assertEquals(2, len(options))
 
@@ -233,7 +233,7 @@ class TestSite(unittest.TestCase):
         self.assertEquals(200, response.status_code)
 
         html = self.get_html(response)
-        options = html.findall('//select[@id="gateway"]/option')
+        options = html.findall('//select[@id="gateway"]//option')
 
         self.assertEquals(4, len(options))
 
