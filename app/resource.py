@@ -72,9 +72,12 @@ def index(resource_name):
                                                       current_app.config['POTION_DEFAULT_PER_PAGE'],
                                                       where=where)
 
+    form = index_by_name(resource_name)(request.form)
+
     return render_template('%s/index.html' % resource_name,
-                                 resource_name=resource_name,
-                                 pagination=pagination)
+                           form=form,
+                           resource_name=resource_name,
+                           pagination=pagination)
 
 
 @resource_blueprint.route('/%s/<id>/edit' % resource_name,
@@ -130,6 +133,19 @@ def new(resource_name):
                                  form=form,
                                  resource_name=resource_name,
                                  instance=instance)
+
+@resource_blueprint.route('/%s' % resource_name, methods=['DELETE'])
+@login_required
+def bulk_delete(resource_name):
+    resource = resource_by_name(resource_name)
+    ids = request.args.getlist('ids')
+    where = [Condition('id', COMPARATORS['$in'], ids)]
+    instances = resource.manager.instances(where=where)
+
+    for instance in instances:
+        resource.manager.destroy(instance.id)
+
+    return redirect(url_for('.index', resource_name=resource_name))
 
 
 @resource_blueprint.route('/%s/edit' % resource_name, methods=['GET', 'POST'])

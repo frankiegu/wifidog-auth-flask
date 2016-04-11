@@ -10,7 +10,7 @@
         {% include 'resources/actions.html' %}
     </div>
 
-    {% if instances %}
+    {% if pagination.items %}
     <table class="flakes-table">
         <colgroup>
             <col span="1" style="width: 20px">
@@ -25,13 +25,13 @@
             </tr>
         </thead>
         <tbody>
-            {% for instance in instances %}
-            <tr data-id="{{ instance.id }}">
-                <td class="checkbox"><input type="checkbox" name="ids" value="{{ instance.id }}"></td>
-                <td class="id" data-label="ID"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=instance.id) }}">{{ instance.id }}</a></td>
-                <td class="title" data-label="Title"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=instance.id) }}">{{ instance.title }}</a></td>
-                <td class="description" data-label="Description">{{ instance.description }}</td>
-                <td class="created_at" data-label="Created At">{{ instance.created_at.strftime('%c') }}</td> 
+            {% for item in pagination.items %}
+            <tr data-id="{{ item.id }}">
+                <td class="checkbox"><input type="checkbox" name="ids" value="{{ item.id }}"></td>
+                <td class="id" data-label="ID"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=item.id) }}">{{ item.id }}</a></td>
+                <td class="title" data-label="Title"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=item.id) }}">{{ item.title }}</a></td>
+                <td class="description" data-label="Description">{{ item.description }}</td>
+                <td class="created_at" data-label="Created At">{{ item.created_at.strftime('%c') }}</td> 
             </tr>
             {% endfor %}
         </tbody>
