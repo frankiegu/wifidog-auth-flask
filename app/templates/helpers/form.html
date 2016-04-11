@@ -7,3 +7,23 @@
 <div class="description">{{ field.description }}</div>
 {% endif %}
 {% endmacro %}
+
+{% macro select(name, choices, defaultValue) %}
+<select name="{{ name }}">
+    {% for value, text in choices %}
+    <option value="{{ value }}"{% if value == defaultValue %} selected="selected"{% endif %}>{{ text }}</option>
+    {% endfor %}
+</select>
+{% endmacro %}
+
+{% macro select_optgroups(name, choices, defaultValue) %}
+<select name="{{ name }}">
+    {% for label, group in choices %}
+    <optgroup label="{{ label }}">
+        {% for value, text in group %}
+        <option value="{{ value }}"{% if value == defaultValue %} selected="selected"{% endif %}>{{ text }}</option>
+        {% endfor %}
+    </optgroup>
+    {% endfor %}
+</select>
+{% endmacro %}

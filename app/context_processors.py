@@ -1,3 +1,5 @@
+from app.resources import GatewayResource, NetworkResource
+
 from flask.ext.menu import current_menu
 from flask.ext.security import current_user
 
@@ -33,3 +35,14 @@ def init_context_processors(app):
             'archived': 'trash',
             'blocked': 'thumb-down'
         })
+
+    @app.context_processor
+    def gateways():
+        result = []
+        networks = NetworkResource.manager.instances()
+
+        for network in networks:
+            gateways = NetworkResource.manager.relation_instances(network, 'gateways', GatewayResource)
+            result.append((network.title, [ (g.id, g.title) for g in gateways ]))
+
+        return dict(gateways=result)

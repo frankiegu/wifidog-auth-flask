@@ -17,10 +17,11 @@ before_script:
   - make setup-test-env production-install bootstrap-tests
   - make serve &
 
-script: "make tests tests-webdriver"
+# script: "make tests tests-webdriver"
+script: "make tests"
 
-addons:
-  sauce_connect: true
+# addons:
+#   sauce_connect: true
 
 env:
   global:

@@ -4,11 +4,13 @@ import inflect
 from app import forms, resources
 from app.utils import has_a_role
 
-from flask import Blueprint, current_app
+from flask import Blueprint, current_app, request, redirect, url_for, flash, render_template
 
 from flask.ext.menu import current_menu
 from flask.ext.potion.instances import Condition, COMPARATORS
 from flask.ext.security import login_required
+
+from wtforms.meta import DefaultMeta
 
 
 resource_blueprint = Blueprint('resource', __name__)
@@ -51,31 +53,26 @@ def index(resource_name):
     title = resource_name[0].upper() + resource_name[1:]
     resource = resource_by_name(resource_name)
 
-    action = flask.request.args.get('action')
+    action = request.args.get('action')
 
     if action in ['delete', 'edit']:
-        ids = flask.request.args.getlist('ids')
-        return flask.redirect(flask.url_for('.bulk_%s' % action,
+        ids = request.args.getlist('ids')
+        return redirect(url_for('.bulk_%s' % action,
                                             resource_name=resource_name,
                                             ids=ids))
 
     where = []
-    for key, value in flask.request.args.iteritems():
+    for key, value in request.args.iteritems():
         if key in ['action', 'page', 'ids']:
             continue
         if value != '':
             where.append(Condition(key, COMPARATORS['$eq'], value))
 
-    pagination = resource.manager.paginated_instances(int(flask.request.args.get('page', 1)),
+    pagination = resource.manager.paginated_instances(int(request.args.get('page', 1)),
                                                       current_app.config['POTION_DEFAULT_PER_PAGE'],
                                                       where=where)
 
-    filters = {
-        'gateway': forms.ResourceSelectField(_name='gateways'),
-    }
-
-    return flask.render_template('%s/index.html' % resource_name,
-                                 filters=filters,
+    return render_template('%s/index.html' % resource_name,
                                  resource_name=resource_name,
                                  pagination=pagination)
 
@@ -88,25 +85,25 @@ def edit(resource_name, id):
     title = singular[0].upper() + singular[1:]
     resource = resource_by_name(resource_name)
 
-    if (flask.request.method == 'POST' and
-            flask.request.form.get('action') == 'delete'):
+    if (request.method == 'POST' and
+            request.form.get('action') == 'delete'):
         instance = resource.manager.read(id)
         resource.manager.delete(instance)
-        flask.flash('%s %s deleted' % (title, instance), 'success')
-        return flask.redirect(flask.url_for('.index',
+        flash('%s %s deleted' % (title, instance), 'success')
+        return redirect(url_for('.index',
                                             resource_name=resource_name))
 
     instance = resource.manager.read(id)
-    form = form_by_name(resource_name)(flask.request.form, instance)
+    form = form_by_name(resource_name)(request.form, instance)
 
-    if flask.request.method == 'POST':
+    if request.method == 'POST':
         if form.validate():
             resource.manager.update(instance, form.data)
-            flask.flash('%s %s updated' % (title, instance), 'success')
-            return flask.redirect(flask.url_for('.index',
+            flash('%s %s updated' % (title, instance), 'success')
+            return redirect(url_for('.index',
                                                 resource_name=resource_name))
 
-    return flask.render_template('resources/edit.html',
+    return render_template('resources/edit.html',
                                  title='Edit %s' % title,
                                  form=form,
                                  resource_name=resource_name,
@@ -120,15 +117,15 @@ def new(resource_name):
     title = singular[0].upper() + singular[1:]
     resource = resource_by_name(resource_name)
     instance = resource.meta.model()
-    form = form_by_name(resource_name)(flask.request.form, instance)
+    form = form_by_name(resource_name)(request.form, instance)
 
-    if flask.request.method == 'POST' and form.validate():
+    if request.method == 'POST' and form.validate():
         instance = resource.manager.create(form.data)
-        flask.flash('%s %s created' % (title, instance), 'success')
-        return flask.redirect(flask.url_for('.index',
+        flash('%s %s created' % (title, instance), 'success')
+        return redirect(url_for('.index',
                                             resource_name=resource_name))
 
-    return flask.render_template('resources/new.html',
+    return render_template('resources/new.html',
                                  title='New %s' % title,
                                  form=form,
                                  resource_name=resource_name,
@@ -141,7 +138,7 @@ def bulk_edit(resource_name):
     singular = p.singular_noun(resource_name)
     title = resource_name[0].upper() + resource_name[1:]
     resource = resource_by_name(resource_name)
-    ids = flask.request.args.getlist('ids')
+    ids = request.args.getlist('ids')
     where = [Condition('id', COMPARATORS['$in'], ids)]
     form = form_by_name(resource_name)
 
@@ -150,11 +147,11 @@ def bulk_edit(resource_name):
     forms = []
     for instance in instances:
         instance.original_id = instance.id
-        forms.append(form(flask.request.form,
+        forms.append(form(request.form,
                           instance,
                           '%s:%s:' % (singular, instance.id)))
 
-    if flask.request.method == 'POST':
+    if request.method == 'POST':
         is_valid = True
 
         for form in forms:
@@ -166,11 +163,11 @@ def bulk_edit(resource_name):
                 instance = resource.manager.read(form.data['original_id'])
                 resource.manager.update(instance, form.data)
 
-            flask.flash('%s updated' % title, 'success')
-            return flask.redirect(flask.url_for('.index',
+            flash('%s updated' % title, 'success')
+            return redirect(url_for('.index',
                                                 resource_name=resource_name))
 
-    return flask.render_template('resources/bulk_edit.html',
+    return render_template('resources/bulk_edit.html',
                                  title='Bulk Edit %s' % title,
                                  forms=forms,
                                  resource_name=resource_name,

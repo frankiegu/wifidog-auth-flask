@@ -1,5 +1,6 @@
 import datetime
 import flask
+import json
 import uuid
 
 from app.context_processors import init_context_processors
@@ -74,5 +75,10 @@ def create_app(config=None):
             expires = datetime.datetime.now() + datetime.timedelta(days=365*2)
             response.set_cookie('cid', cid, expires=expires)
         return response
+
+    def json_filter(value):
+        return json.dumps(value)
+
+    app.jinja_env.filters['json'] = json_filter
 
     return app

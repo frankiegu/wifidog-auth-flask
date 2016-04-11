@@ -69,9 +69,7 @@
 			<div class="view-wrap">
                 <h1>{{ title }}</h1>
 
-                {% if show_flash != False %}
-                {% include 'layouts/flashes.html' %}
-                {% endif %}
+                <div class="flashes"></div>
 
                 {% block content %}{% endblock %}
 			</div>
@@ -81,6 +79,26 @@
     <script src="{{ url_for('static', filename='scripts/site.min.js') }}"></script>
 
     <script>
+    function notify(category, message) {
+        if (!("Notification" in window)) {
+            $('.flashes').append('<div class="flakes-message ' + category + '">' + message + '</div>');
+        } else if (Notification.permission === "granted") {
+            // If it's okay let's create a notification
+            var notification = new Notification('Application Notification', {
+                icon: '',
+                body: message
+            });
+        } else if (Notification.permission !== 'denied') {
+            // Otherwise, we need to ask the user for permission
+            Notification.requestPermission(function (permission) {
+                // If the user accepts, let's create a notification
+                if (permission === "granted") {
+                    var notification = new Notification("Hi there!");
+                }
+            });
+        }
+    }
+
     jQuery(function($) {
         {% if config.get('PUSH_ENABLED') %}
         var eventSource = new EventSource('{{ url_for('app.push') }}');
@@ -90,6 +108,14 @@
         {% endif %}
 
         setupNotifications();
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        notify({{ category|json|safe }}, {{ message|json|safe }});
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
     });
     </script>
 
