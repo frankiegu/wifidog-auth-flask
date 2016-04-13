@@ -1,0 +1,86 @@
+{% extends 'layouts/default.html' %}
+
+{% set title = resource_name | capitalize %}
+
+{% macro format_column(item, column) -%}
+{% if column.format %}
+{{ column.format(item) }}
+{% else %}
+{{ item[column.name] }}
+{% endif %}
+{%- endmacro %}
+
+{% block content %}
+<div id="{{ resource_name }}-index">
+    <form method="post" action="{{ url_for('resource.index', resource_name=resource_name) }}">
+
+    {% if resource.search or resource.filter %}
+    <div class="flakes-search">
+        {% if resource.search %}
+        <input type="search" class="search-box" placeholder="Search" autofocus>
+        {% endif %}
+
+        {% if False and current_user.has_role('super-admin') or current_user.has_role('network-admin') %}
+        <div class="filters">
+            <div class="filter-select">
+                {{ form.gateway_id }}
+                <button type="submit" class="button-primary" name="action" value="filter">Filter</button>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="flakes-actions-bar">
+        {% include 'resources/actions.html' %}
+    </div>
+
+    {% if pagination.items %}
+    <table class="flakes-table">
+        <colgroup>
+            <col span="1" style="width: 20px">
+        </colgroup>
+        <thead>
+            <tr>
+                <th class="checkbox"></th>
+                {% for column in resource.columns %}
+                <th class="{{ column.name }}">{{ column.title }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in pagination.items %}
+            <tr data-id="{{ item.id }}">
+                <td class="checkbox"><input type="checkbox" name="ids" value="{{ item.id }}"></td>
+                {% for column in resource.columns %}
+                <td class="{{ column.name }}" data-label="{{ column.title }}">
+                    {% if column.link == True %}
+                        <a href="{{ url_for('resource.edit', resource_name=resource_name, id=item.id) }}">{{ format_column(item, column) }}</a>
+                    {% elif column.link %}
+                        <a href="{{ column.link(item) }}">{{ format_column(item, column) }}</a>
+                    {% else %}
+                    {{ format_column(item, column) }}
+                    {% endif %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="flakes-pagination right">
+        {% if pagination.has_prev %}
+        <a href="{{ url_for('resource.index', resource_name=resource_name, page=pagination.prev_num) }}">Prev</a> &nbsp;
+        {% endif %}
+
+        <input name="page" value="{{ pagination.page }}"> <i>of</i> {{ pagination.pages }}
+
+        {% if pagination.has_next %}
+        &nbsp; <a href="{{ url_for('resource.index', resource_name=resource_name, page=pagination.next_num) }}">Next</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    </form>
+</div>
+{% endblock %}

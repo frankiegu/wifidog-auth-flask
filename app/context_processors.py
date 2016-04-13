@@ -1,3 +1,5 @@
+from app.config import MENU_CATEGORY_ORDER
+
 from flask.ext.menu import current_menu
 from flask.ext.security import current_user
 
@@ -15,7 +17,7 @@ def init_context_processors(app):
                     menu_categories[child.category].append(child)
 
             sorted_categories = []
-            for category in app.config['MENU_CATEGORY_ORDER']:
+            for category in MENU_CATEGORY_ORDER:
                 if category in menu_categories:
                     sorted_categories.append([category, menu_categories[category]])
 

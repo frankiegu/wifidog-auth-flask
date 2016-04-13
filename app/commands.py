@@ -7,7 +7,6 @@ import os
 
 from app import create_app
 from app.constants import ROLES
-from app.admin import VoucherAdmin
 from app.models import Role, Network, Gateway, Voucher, Country, Currency, Product, db, users
 from app.ext import manager
 from flask import current_app

@@ -19,13 +19,6 @@ HOST = '0.0.0.0'
 INFLUXDB_DATABASE = 'auth'
 INFLUXDB_USER = os.environ.get('INFLUXDB_USER')
 INFLUXDB_PASSWORD = os.environ.get('INFLUXDB_PASSWORD')
-MENU_CATEGORY_ORDER = [
-        'Vouchers',
-        'Sales',
-        'Gateways',
-        'Networks',
-        'System',
-]
 PORT = 8080
 POTION_DEFAULT_PER_PAGE = 10
 PUSH_ENABLED = False

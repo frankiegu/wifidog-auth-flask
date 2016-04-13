@@ -2,6 +2,7 @@ import flask
 import inflect
 
 from app import forms, resources
+from app.config import RESOURCES
 from app.utils import has_a_role
 
 from flask import Blueprint, current_app, request, redirect, url_for, flash, render_template
@@ -15,16 +16,6 @@ from wtforms.meta import DefaultMeta
 
 resource_blueprint = Blueprint('resource', __name__)
 p = inflect.engine()
-
-roles_by_resource = {
-    'networks': ('super-admin',),
-    'currencies': ('super-admin',),
-    'gateways': ('super-admin', 'network-admin'),
-    'users': ('super-admin', 'network-admin'),
-    'categories': ('super-admin', 'network-admin', 'gateway-admin'),
-    'products': ('super-admin', 'network-admin', 'gateway-admin'),
-    'vouchers': ('super-admin', 'network-admin', 'gateway-admin'),
-}
 
 resource_name = '<any(networks, gateways, vouchers, users, categories, products, currencies):resource_name>'
 
@@ -44,7 +35,8 @@ def form_by_name(name):
 def index_by_name(name):
     singular = p.singular_noun(name)
     form_class = singular[0].upper() + singular[1:] + 'Index'
-    return getattr(forms, form_class)
+    if hasattr(forms, form_class):
+        return getattr(forms, form_class)
 
 
 @resource_blueprint.route('/%s' % resource_name, methods=['GET'])
@@ -72,11 +64,17 @@ def index(resource_name):
                                                       current_app.config['POTION_DEFAULT_PER_PAGE'],
                                                       where=where)
 
-    form = index_by_name(resource_name)(request.form)
+    form_class = index_by_name(resource_name)
 
-    return render_template('%s/index.html' % resource_name,
+    if form_class:
+        form = form_class(request.form)
+    else:
+        form = None
+
+    return render_template('resources/index.html',
                            form=form,
                            resource_name=resource_name,
+                           resource=RESOURCES[resource_name],
                            pagination=pagination)
 
 
@@ -196,27 +194,19 @@ def endpoint_arguments_constructor(resource):
 
 
 def init_resources():
-    resources = {
-            'vouchers': 'Vouchers',
-            'networks': 'Networks',
-            'gateways': 'Gateways',
-            'categories': 'Sales',
-            'products': 'Sales',
-            'users': 'System',
-            'currencies': 'System',
-    }
-
     endpoints = {
             'index': [ '%(resource)s', 'Manage %(plural)s' ],
             'new': [ '%(resource)s/new', 'New %(singular)s' ],
     }
 
-    index = 0
+    order = 0
 
-    for resource, category in resources.iteritems():
+    for resource, resource_defn in RESOURCES.iteritems():
         for action, defn in endpoints.iteritems():
             def visible_when(action=action, resource=resource):
-                return has_a_role(*roles_by_resource[resource])
+                roles = RESOURCES[resource]['roles']
+                result = has_a_role(*roles)
+                return result
 
             (path, title) = defn
             endpoint = 'resource.%s' % action
@@ -224,9 +214,9 @@ def init_resources():
             item = current_menu.submenu(path)
             item.register(endpoint,
                           title % {'singular': p.singular_noun(resource), 'plural': resource},
-                          order=index,
+                          order=order,
                           endpoint_arguments_constructor=endpoint_arguments_constructor(resource),
                           expected_args=['resource_name'],
                           visible_when=visible_when,
-                          category=category)
-            index = index + 10
+                          category=resource_defn['category'])
+            order = order + 10

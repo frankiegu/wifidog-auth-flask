@@ -18,20 +18,24 @@
         <thead>
             <tr>
                 <th class="checkbox"></th>
-                <th class="id">ID</th>
-                <th class="title">Title</th>
-                <th class="description">Description</th>
-                <th class="created_at">Created At</th>
+                {% for column in columns %}
+                <th class="{{ column.name }}">{{ column.title }}</th>
+                {% endfor %}
             </tr>
         </thead>
         <tbody>
             {% for item in pagination.items %}
             <tr data-id="{{ item.id }}">
                 <td class="checkbox"><input type="checkbox" name="ids" value="{{ item.id }}"></td>
-                <td class="id" data-label="ID"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=item.id) }}">{{ item.id }}</a></td>
-                <td class="title" data-label="Title"><a href="{{ url_for('resource.edit', resource_name=resource_name, id=item.id) }}">{{ item.title }}</a></td>
-                <td class="description" data-label="Description">{{ item.description }}</td>
-                <td class="created_at" data-label="Created At">{{ item.created_at.strftime('%c') }}</td> 
+                {% for column in columns %}
+                <td class="{{ column.name }}" data-label="{{ column.title }}">
+                    {% if column.link %}
+                    <a href="{{ url_for('resource.edit', resource_name=resource_name, id=item.id) }}">{{ item[column.name] }}</a>
+                    {% else %}
+                    {{ item[column.name] }}
+                    {% endif %}
+                </td>
+                {% endfor %}
             </tr>
             {% endfor %}
         </tbody>

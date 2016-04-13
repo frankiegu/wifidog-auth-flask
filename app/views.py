@@ -95,7 +95,6 @@ def wifidog_ping():
     try:
         influx_db.connection.write_points(points)
     except:
-
         pass
 
     return ('Pong', 200)
@@ -140,7 +139,10 @@ def wifidog_auth():
         }
     ]
 
-    influx_db.connection.write_points(points)
+    try:
+        influx_db.connection.write_points(points)
+    except:
+        pass
 
     return ("Auth: %s\nMessages: %s\n" % (auth.status, auth.messages), 200)
 
@@ -239,8 +241,6 @@ def home():
             'value': count,
             'label': p.plural('Network', count),
         })
-
-    flash('Hi there', 'success')
 
     return render_template(template, metrics=metrics)
 
