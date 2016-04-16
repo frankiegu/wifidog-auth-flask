@@ -3,6 +3,7 @@ import inflect
 
 from app import forms, resources
 from app.config import RESOURCES
+from app.models import Gateway
 from app.utils import has_a_role
 
 from flask import Blueprint, current_app, request, redirect, url_for, flash, render_template
@@ -18,6 +19,10 @@ resource_blueprint = Blueprint('resource', __name__)
 p = inflect.engine()
 
 resource_name = '<any(networks, gateways, vouchers, users, categories, products, currencies):resource_name>'
+
+
+def get_title(obj):
+    return getattr(obj, 'title', getattr(obj, 'name', getattr(obj, 'code', getattr(obj, 'id'))))
 
 
 def resource_by_name(name):
@@ -90,7 +95,7 @@ def edit(resource_name, id):
             request.form.get('action') == 'delete'):
         instance = resource.manager.read(id)
         resource.manager.delete(instance)
-        flash('%s %s deleted' % (title, instance), 'success')
+        flash('%s %s deleted' % (title, get_title(instance)), 'success')
         return redirect(url_for('.index',
                                             resource_name=resource_name))
 
@@ -100,9 +105,8 @@ def edit(resource_name, id):
     if request.method == 'POST':
         if form.validate():
             resource.manager.update(instance, form.data)
-            flash('%s %s updated' % (title, instance), 'success')
-            return redirect(url_for('.index',
-                                                resource_name=resource_name))
+            flash('%s %s updated' % (title, get_title(instance)), 'success')
+            return redirect(url_for('.index', resource_name=resource_name))
 
     return render_template('resources/edit.html',
                                  title='Edit %s' % title,
@@ -122,7 +126,7 @@ def new(resource_name):
 
     if request.method == 'POST' and form.validate():
         instance = resource.manager.create(form.data)
-        flash('%s %s created' % (title, instance), 'success')
+        flash('%s %s created' % (title, get_title(instance)), 'success')
         return redirect(url_for('.index',
                                             resource_name=resource_name))
 

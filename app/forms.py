@@ -218,7 +218,7 @@ def init_forms():
                              },
                              converter=converter,
                              exclude=['code', 'created_at', 'updated_at', 'status'])
-    VoucherForm.gateway = GatewaySelectField(allow_blank=False)
+    # VoucherForm.gateway_id = GatewaySelectField(allow_blank=False)
     VoucherForm.original_id = HiddenField()
 
     ProductForm = model_form(Product,
@@ -228,7 +228,7 @@ def init_forms():
                              },
                              converter=converter,
                              exclude=['order_items', 'categories'])
-    ProductForm.gateway = GatewaySelectField()
+    # ProductForm.gateway = GatewaySelectField()
     ProductForm.original_id = HiddenField()
 
     CategoryForm = model_form(Category,
