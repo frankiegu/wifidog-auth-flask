@@ -108,7 +108,10 @@ RESOURCES = {
             'gateway-admin',
         ),
         'columns': (
-            { 'name': 'id', 'title': 'ID', 'link': True },
+            { 'name': 'categories',
+              'title': 'Categories',
+              'format': lambda product: '<br />'.join([c.title for c in product.categories]) },
+            { 'name': 'code', 'title': 'Code', 'link': True },
             { 'name': 'title', 'title': 'Title', 'link': True },
             { 'name': 'description', 'title': 'Description' },
             { 'name': 'price',

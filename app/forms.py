@@ -227,7 +227,7 @@ def init_forms():
                                  'id': {'label': 'ID'},
                              },
                              converter=converter,
-                             exclude=['order_items', 'categories'])
+                             exclude=['order_items'])
     # ProductForm.gateway = GatewaySelectField()
     ProductForm.original_id = HiddenField()
 

@@ -426,7 +426,7 @@ class Category(db.Model):
     )
 
     def __repr__(self):
-        return '%s :: %s' % (self.code, self.title)
+        return self.title
 
 class Product(db.Model):
     __tablename__ = 'products'
