@@ -214,7 +214,8 @@ class TestSite(unittest.TestCase):
         html = self.get_html(response)
         options = html.findall('//select[@id="gateway"]/option')
 
-        self.assertEquals(0, len(options))
+        self.assertEquals(1, len(options))
+        self.assertEquals('main-gateway1', options[0].get('value'))
 
     def test_voucher_new_as_network(self):
         self.login('main-network@example.com', 'admin')
