@@ -54,6 +54,8 @@ class Converter(ModelConverterBase):
 
     @converts('String', 'Unicode')
     def conv_String(self, field_args, **extra):
+        if extra['column'].key == 'password':
+            field_args['render_kw'] = { 'type': 'password' }
         self._string_common(field_args=field_args, **extra)
         return fields.TextField(**field_args)
 
@@ -230,14 +232,14 @@ def init_forms():
     ProductForm.original_id = HiddenField()
 
     CategoryForm = model_form(Category,
-                             db.session,
-                             field_args={
-                                 'id': {'label': 'ID'},
-                             },
-                             exclude=['status', 'sub_categories'],
-                             converter=converter)
+                              db.session,
+                              field_args={
+                                  'id': {'label': 'ID'},
+                              },
+                              exclude=['status', 'sub_categories'],
+                              converter=converter)
     CategoryForm.original_id = HiddenField()
 
     UserForm = model_form(User,
-                             db.session,
-                             converter=converter)
+                          db.session,
+                          converter=converter)
