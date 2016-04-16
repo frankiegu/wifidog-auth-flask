@@ -24,14 +24,14 @@ def bootstrap_tests():
 
     create_roles(quiet=True)
 
-    create_network(u'main-network', u'Network', quiet=True)
-    create_network(u'other-network', u'Other Network', quiet=True)
+    create_network(u'main-network', u'Main Network', u'Description for main network', quiet=True)
+    create_network(u'other-network', u'Other Network', u'Description for other network', quiet=True)
 
-    create_gateway(u'main-network', u'main-gateway1', u'Main Gateway #1', quiet=True)
-    create_gateway(u'main-network', u'main-gateway2', u'Main Gateway #2', quiet=True)
+    create_gateway(u'main-network', u'main-gateway1', u'Main Gateway #1', u'Description for main gateway #1', quiet=True)
+    create_gateway(u'main-network', u'main-gateway2', u'Main Gateway #2', u'Description for main gateway #2', quiet=True)
 
-    create_gateway(u'other-network', u'other-gateway1', u'Other Gateway #1', quiet=True)
-    create_gateway(u'other-network', u'other-gateway2', u'Other Gateway #2', quiet=True)
+    create_gateway(u'other-network', u'other-gateway1', u'Other Gateway #1', u'Description for other gateway #1', quiet=True)
+    create_gateway(u'other-network', u'other-gateway2', u'Other Gateway #2', u'Description for other gateway #2', quiet=True)
 
     create_user(u'super-admin@example.com', u'admin', u'Super', u'Admin', u'super-admin', quiet=True)
 

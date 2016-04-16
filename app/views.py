@@ -1,3 +1,4 @@
+import datetime
 import inflect
 import jinja2
 
@@ -59,6 +60,7 @@ def wifidog_login():
         abort(404)
 
     gateway = Gateway.query.filter_by(id=gateway_id).first_or_404()
+
     return render_template('wifidog/login.html',
                                  form=form,
                                  gateway=gateway)
@@ -150,9 +152,12 @@ def wifidog_auth():
 def _show_gateway(gw_id):
     voucher_token = session.get('voucher_token')
     if voucher_token:
-        voucher = Voucher.query.filter_by(token=voucher_token).first_or_404()
+        voucher = Voucher.query.filter_by(token=voucher_token).first()
     else:
         voucher = None
+
+    # voucher = Voucher.query.first()
+    # voucher.started_at = datetime.datetime.now()
 
     gateway = Gateway.query.filter_by(id=gw_id).first_or_404()
 

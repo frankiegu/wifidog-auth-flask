@@ -59,6 +59,10 @@ class TestSite(unittest.TestCase):
     def logout(self):
         return self.client.get('/logout', follow_redirects=True)
 
+    def test_voucher_login(self):
+        response = self.client.get('/wifidog/login/?gw_id=main-gateway1')
+        self.assertEquals(200, response.status_code)
+
     def test_home_redirects_to_login(self):
         response = self.client.get('/')
         self.assertEquals(302, response.status_code)

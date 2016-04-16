@@ -1,17 +1,13 @@
 {% extends 'layouts/default.html' %}
-{% from 'helpers/form.html' import render_group %}
+{% from 'helpers/form.html' import render_field %}
 
 {% set title = 'Voucher Login' %}
 
 {% block content %}
-<div class="header">
-    <h1>Login</h1>
-</div>
-
-<div class="content">
+<div id="wifidog-login">
     <p><strong>Note:</strong> A voucher give you Internet access on one device only.</p>
 
-    <form method="post" action="{{ url_for('.wifidog_login') }}" class="pure-form pure-form-aligned">
+    <form method="post" action="{{ url_for('.wifidog_login') }}" class="grid-form">
         {{ form.csrf_token }}
         {{ form.gw_address | safe }}
         {{ form.gw_port | safe }}
@@ -20,12 +16,21 @@
         {{ form.url | safe }}
 
         <fieldset>
-            {{ render_group(form.voucher_code, required=True) }}
-            {{ render_group(form.name) }}
-            <div class="pure-controls">
-                <button type="submit" class="pure-button pure-button-primary">Go</button>
+            <legend>Login</legend>
+
+            <div data-row-span="2">
+                <div data-row-span="1">
+                    {{ render_field(form.voucher_code, required=True, autofocus=True) }}
+                </div>
+                <div data-row-span="1">
+                    {{ render_field(form.name) }}
+                </div>
             </div>
         </fieldset>
+
+        <br />
+
+        <button type="submit" class="button-primary">Save</button>
     </form>
 </div>
 {% endblock %}

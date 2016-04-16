@@ -99,7 +99,7 @@
         }
     }
 
-    jQuery(function($) {
+    $(function() {
         {% if config.get('PUSH_ENABLED') %}
         var eventSource = new EventSource('{{ url_for('app.push') }}');
         eventSource.onmessage = function(response) {

@@ -5,14 +5,38 @@
 {% block content %}
 {% include 'wifidog/_facebook.html' %}
 
-<portal gateway={{ gateway.id }} time_left={{ voucher and voucher.time_left }}></portal>
+<div id="wifidog-portal">
+    {% if gateway.logo %}
+    <img src="{{ url_for('static', filename='logos/%s' % gateway.logo) }}" />
+    {% endif %}
+
+    {% if gateway.subtitle %}
+    <h2>{{ gateway.subtitle }}</h2>
+    {% endif %}
+
+    <div class="description">
+        {{ gateway.description }}
+    </div>
+
+    <div property="url_facebook"
+        class="fb-like"
+        data-href={ gateway.url_facebook }
+        data-width="300"
+        data-layout="standard"
+        data-action="like"
+        data-show-faces="true"
+        data-share="true">
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
-{% if voucher %}
+{% if voucher and voucher.time_left %}
 <script>
-Zepto(function($) {
+$(function() {
     var time_left = {{ voucher.time_left }};
+
+    notify('success', time_left + ' minutes left');
 
     if(time_left > 0) {
         setInterval(function() {
@@ -23,13 +47,13 @@ Zepto(function($) {
 
     if(time_left > 5) {
         setTimeout(function() {
-            new Notification('Your session is about to expire. You have 5 minutes left.');
+            notify('warning', 'Your session is about to expire. You have 5 minutes left.');
         }, (time_left - 5) * 60000);
     }
 
     if(time_left > 10) {
         setTimeout(function() {
-            new Notification('Your session is about to expire. You have 10 minutes left.');
+            notify('warning', 'Your session is about to expire. You have 10 minutes left.');
         }, (time_left - 10) * 60000);
     }
 });
