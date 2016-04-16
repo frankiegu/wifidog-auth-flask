@@ -2,9 +2,9 @@
   "name": "wifidog-auth-flask",
   "private": true,
   "dependencies": {
-    "jquery": "~2.1.1",
+    "jquery": "~2.2.3",
     "snapjs": "~1.9.3",
-    "responsive-elements": "~1.0.0",
-    "gridforms": "~1.0.2"
+    "responsive-elements": "~1.0.2",
+    "gridforms": "~1.0.8"
   }
 }
