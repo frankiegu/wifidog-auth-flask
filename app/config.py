@@ -1,5 +1,18 @@
 from flask import url_for
 
+
+def format_bytes(bytes):
+    return bytes / 1024
+
+STATUS_ICONS = {
+    'new': 'file',
+    'active': 'bolt',
+    'ended': 'flag',
+    'expired': 'circle-x',
+    'archived': 'trash',
+    'blocked': 'thumb-down'
+}
+
 MENU_CATEGORY_ORDER = (
         'Vouchers',
         'Sales',
@@ -22,7 +35,9 @@ RESOURCES = {
               'title': 'Gateways',
               'format': lambda network: network.gateways.count(),
               'link': lambda network: url_for('resource.index', resource_name='gateways', network_id=network.id) },
-            { 'name': 'created_at', 'title': 'Created', 'format': lambda network: network.created_at.strftime('%c') },
+            { 'name': 'created_at',
+              'title': 'Created',
+              'format': lambda network: network.created_at.strftime('%c') },
         ),
     },
     'gateways': {
@@ -122,6 +137,17 @@ RESOURCES = {
               'title': 'Name',
               'link': True,
               'format': lambda voucher: voucher.name or '-' },
+            { 'name': 'status',
+              'title': 'Status',
+              'format': lambda voucher: '<span class="oi" data-glyph="%s" title="%s" aria-hidden="true"></span' % (STATUS_ICONS[voucher.status], voucher.status) },
+            { 'name': 'times',
+              'title': 'Times',
+              'format': lambda voucher: '%s%s' % ('%s /' % voucher.time_left if voucher.time_left else '', voucher.minutes) },
+            { 'name': 'traffic',
+              'title': 'Traffic',
+              'format': lambda voucher: '%s in; %s out; %s both' % (format_bytes(voucher.incoming),
+                                                                    format_bytes(voucher.outgoing),
+                                                                    format_bytes(voucher.incoming + voucher.outgoing)) },
         ),
     },
 }

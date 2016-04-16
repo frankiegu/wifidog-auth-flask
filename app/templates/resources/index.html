@@ -4,7 +4,7 @@
 
 {% macro format_column(item, column) -%}
 {% if column.format %}
-{{ column.format(item) }}
+{{ column.format(item) | safe }}
 {% else %}
 {{ item[column.name] }}
 {% endif %}
