@@ -4,6 +4,7 @@ app/tags/**/*.js
 bootstrap.py
 bower_components/
 build/
+/local.py
 logs/
 node_modules/
 tmp/

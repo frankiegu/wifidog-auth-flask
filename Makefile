@@ -10,6 +10,10 @@ browser-sync:
 nodemon-tests: bootstrap-tests
 	nodemon tests.py
 
+bootstrap-local:
+	rm -f data/local.db
+	python manage.py bootstrap_local marlinf@datashaman.com Gargle12
+
 bootstrap-tests:
 	rm -f data/tests.db
 	python manage.py bootstrap_tests

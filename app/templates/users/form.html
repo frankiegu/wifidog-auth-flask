@@ -13,12 +13,17 @@
             {{ render_field(form.family_name) }}
         </div>
     </div>
-    <div data-row-span="3">
+    <div data-row-span="2">
         <div data-field-span="1">
             {{ render_field(form.email) }}
         </div>
         <div data-field-span="1">
             {{ render_field(form.password) }}
+        </div>
+    </div>
+    <div data-row-span="2">
+        <div data-field-span="1">
+            {{ render_field(form.roles) }}
         </div>
         <div data-field-span="1">
             {{ render_field(form.active) }}
