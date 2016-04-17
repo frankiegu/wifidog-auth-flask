@@ -7,7 +7,8 @@ import uuid
 
 import flask
 
-from app.graphs import states, available_actions
+from app.config import RESOURCES
+
 from flask import current_app
 from flask.ext.potion import fields
 from flask.ext.security import UserMixin, RoleMixin, current_user, SQLAlchemyUserDatastore, Security
@@ -232,10 +233,6 @@ class Voucher(db.Model):
     @record_change
     def archive(self):
         self.status = 'archived'
-
-    @property
-    def available_actions(self):
-        return available_actions(self.status, 'admin')
 
     def __repr__(self):
         return self.code

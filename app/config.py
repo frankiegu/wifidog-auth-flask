@@ -4,15 +4,6 @@ from flask import url_for
 def format_bytes(bytes):
     return bytes / 1024
 
-STATUS_ICONS = {
-    'new': 'file',
-    'active': 'bolt',
-    'ended': 'flag',
-    'expired': 'circle-x',
-    'archived': 'trash',
-    'blocked': 'thumb-down'
-}
-
 MENU_CATEGORY_ORDER = (
         'Vouchers',
         'Sales',
@@ -142,7 +133,7 @@ RESOURCES = {
               'format': lambda voucher: voucher.name or '-' },
             { 'name': 'status',
               'title': 'Status',
-              'format': lambda voucher: '<span class="oi" data-glyph="%s" title="%s" aria-hidden="true"></span' % (STATUS_ICONS[voucher.status], voucher.status) },
+              'format': lambda voucher: '<span class="oi" data-glyph="%s" title="%s" aria-hidden="true"></span' % (RESOURCES['vouchers']['states'][voucher.status]['icon'], voucher.status) },
             { 'name': 'times',
               'title': 'Times',
               'format': lambda voucher: '%s%s' % ('%s /' % voucher.time_left if voucher.time_left else '', voucher.minutes) },
@@ -152,5 +143,88 @@ RESOURCES = {
                                                                     format_bytes(voucher.outgoing),
                                                                     format_bytes(voucher.incoming + voucher.outgoing)) },
         ),
+        'states': {
+            'new': {
+                'icon': 'file',
+                'actions': (
+                    'archive',
+                    'expire',
+                    'extend',
+                    'login',
+                ),
+            },
+            'active': {
+                'icon': 'bolt',
+                'actions': (
+                    'archive',
+                    'block',
+                    'end',
+                    'extend',
+                ),
+            },
+            'ended': {
+                'icon': 'flag',
+                'actions': (
+                    'archive',
+                ),
+            },
+            'expired': {
+                'icon': 'circle-x',
+                'actions': (
+                    'archive',
+                ),
+            },
+            'archived': {
+                'icon': 'trash',
+            },
+            'blocked': {
+                'icon': 'thumb-down',
+                'actions': (
+                    'archive',
+                    'unblock',
+                ),
+            },
+        },
+        'actions': {
+            'admin': (
+                {
+                    'name': 'extend',
+                    'title': 'Extend',
+                    'icon': 'timer'
+                },
+                {
+                    'name': 'block',
+                    'title': 'Block',
+                    'icon': 'thumb-down',
+                },
+                {
+                    'name': 'unblock',
+                    'title': 'Unblock',
+                    'icon': 'thumb-up',
+                },
+                {
+                    'name': 'archive',
+                    'title': 'Archive',
+                    'icon': 'x',
+                },
+            ),
+            'user': (
+                {
+                    'name': 'login',
+                    'title': 'Login',
+                    'icon': 'enter',
+                },
+            ),
+            'system': (
+                {
+                    'name': 'expire',
+                    'title': 'Expire',
+                },
+                {
+                    'name': 'end',
+                    'title': 'End',
+                },
+            ),
+        },
     },
 }

@@ -2,7 +2,6 @@ import errno
 import flask
 import os
 
-from app.graphs import states, actions
 from app.models import Network, User, Gateway, Voucher, Category, Product, Currency, db
 from flask.ext.login import current_user, login_required
 from flask.ext.potion import Api, fields, signals

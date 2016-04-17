@@ -21,6 +21,16 @@ p = inflect.engine()
 resource_name = '<any(networks, gateways, vouchers, users, categories, products, currencies):resource_name>'
 
 
+def available_actions(resource_name, status, interface='admin'):
+    actions = []
+    
+    for action in RESOURCES[resource_name]['states'][status]['actions']:
+        for defn in RESOURCES[resource_name]['actions'][interface]:
+            if defn['name'] == action:
+                actions.append(defn)
+
+    return actions
+
 def get_title(obj):
     return getattr(obj, 'title', getattr(obj, 'name', getattr(obj, 'code', getattr(obj, 'id'))))
 
@@ -77,6 +87,7 @@ def index(resource_name):
         form = None
 
     return render_template('resources/index.html',
+                           available_actions=available_actions,
                            form=form,
                            resource_name=resource_name,
                            resource=RESOURCES[resource_name],
