@@ -20,6 +20,7 @@ influxdb
 lxml
 markupsafe
 pillow
+pyquery
 python-dotenv
 requests
 sauceclient

@@ -28,6 +28,7 @@ bcrypt==2.0.0
 blinker==1.4
 cffi==1.5.1
 click==6.2
+cssselect==0.9.1
 decorator==4.0.9
 functools32==3.2.3.post2
 gitchangelog==2.3.0
@@ -43,6 +44,7 @@ ordereddict==1.1
 passlib==1.6.5
 pep8==1.7.0
 pycparser==2.14
+pyquery==1.2.13
 python-dateutil==2.4.2
 python-dotenv==0.3.0
 python-editor==0.5
