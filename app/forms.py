@@ -56,6 +56,7 @@ class Converter(ModelConverterBase):
     def conv_String(self, field_args, **extra):
         if extra['column'].key == 'password':
             field_args['render_kw'] = { 'type': 'password' }
+            field_args['validators'] = []
         self._string_common(field_args=field_args, **extra)
         return fields.TextField(**field_args)
 

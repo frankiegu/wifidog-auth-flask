@@ -30,7 +30,7 @@ def send_hit(t, data):
     requests.post('http://www.google-analytics.com/collect', data=data)
 
 def send_event(category, action, label=None, value=None):
-    if not current_app.config['TESTING']:
+    if current_app.config['GOOGLE_ANALYTICS_TRACKING_ID']:
         send_hit('event', {
             'ec': category,
             'ea': action,

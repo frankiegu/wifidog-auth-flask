@@ -1,10 +1,10 @@
-from app.config import MENU_CATEGORY_ORDER
-
 from flask.ext.menu import current_menu
 from flask.ext.security import current_user
 
 
 def init_context_processors(app):
+    from app.config import MENU_CATEGORY_ORDER
+
     @app.context_processor
     def menu_categories():
         def func():

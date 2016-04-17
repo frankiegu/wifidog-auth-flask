@@ -272,6 +272,7 @@ class Auth(db.Model):
             return (constants.AUTH_DENIED, 'Requested token not found: %s' % self.token)
         else:
             self.voucher_id = voucher.id
+            self.gateway_id = voucher.gateway_id
 
         if voucher.ip is None:
             voucher.ip = flask.request.args.get('ip')

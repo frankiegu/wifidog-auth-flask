@@ -17,6 +17,8 @@ from flask.ext.menu import register_menu
 from flask.ext.potion.instances import Condition, COMPARATORS
 from flask.ext.security import login_required, roles_accepted, current_user
 
+from sqlalchemy import func
+
 p = inflect.engine()
 bp = Blueprint('app', __name__)
 
@@ -32,8 +34,7 @@ def wifidog_login():
     form = LoginVoucherForm(request.form)
 
     if form.validate_on_submit():
-        voucher_code = form.voucher_code.data.upper()
-        voucher = Voucher.query.filter_by(code=voucher_code).first_or_404()
+        voucher = Voucher.query.filter(func.upper(Voucher.code) == func.upper(form.voucher_code.data)).first_or_404()
 
         form.populate_obj(voucher)
         voucher.token = generate_token()
@@ -45,9 +46,9 @@ def wifidog_login():
         # flash('Logged in, continue to <a href="%s">%s</a>' %
         #             (form.url.data, form.url.data), 'success')
 
-        url = 'http://%s:%s/wifidog/auth?token=%s' % (voucher.gw_address,
-                                                      voucher.gw_port,
-                                                      voucher.token)
+        url = 'http://%s:%s/wifidog/auth/?token=%s' % (voucher.gw_address,
+                                                       voucher.gw_port,
+                                                       voucher.token)
 
         return redirect(url)
 
@@ -104,15 +105,17 @@ def wifidog_ping():
 
 @bp.route('/wifidog/auth/')
 def wifidog_auth():
+    token = request.args.get('token')
+    voucher = Voucher.query.filter_by(token=token).first_or_404()
+
     auth = Auth(
         user_agent=request.user_agent.string,
         stage=request.args.get('stage'),
         ip=request.args.get('ip'),
         mac=request.args.get('mac'),
-        token=request.args.get('token'),
+        token=token,
         incoming=request.args.get('incoming'),
         outgoing=request.args.get('outgoing'),
-        gateway_id=request.args.get('gw_id')
     )
 
     (auth.status, auth.messages) = auth.process_request()
@@ -136,7 +139,7 @@ def wifidog_auth():
             "fields": {
                 "incoming": auth.incoming,
                 "outgoing": auth.outgoing,
-                "both": auth.incoming + auth.outgoing
+                "both": None if auth.incoming is None or auth.outgoing is None else auth.incoming + auth.outgoing
             }
         }
     ]

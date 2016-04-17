@@ -38,8 +38,6 @@ RESOURCES = {
             'super-admin',
             'network-admin',
         ),
-        'filters': {
-        },
         'columns': (
             { 'name': 'id', 'title': 'ID', 'link': True },
             { 'name': 'title', 'title': 'Title', 'link': True },
@@ -84,6 +82,15 @@ RESOURCES = {
             'network-admin',
             'gateway-admin',
         ),
+        'search': [
+            'code',
+            'title',
+            'description',
+        ],
+        'filters': [
+            'network',
+            'gateway',
+        ],
         'columns': (
             { 'name': 'id', 'title': 'ID', 'link': True },
             { 'name': 'title', 'title': 'Title', 'link': True },

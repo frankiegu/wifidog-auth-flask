@@ -18,9 +18,15 @@
             {{ render_field(form.email) }}
         </div>
         <div data-field-span="1">
+            {% if instance %}
+            {{ render_field(form.password, value='') }}
+            {% else %}
             {{ render_field(form.password) }}
+            {% endif %}
         </div>
     </div>
+
+    {% if current_user != instance %}
     <div data-row-span="2">
         <div data-field-span="1">
             {{ render_field(form.roles) }}
@@ -29,4 +35,5 @@
             {{ render_field(form.active) }}
         </div>
     </div>
+    {% endif %}
 </fieldset>
