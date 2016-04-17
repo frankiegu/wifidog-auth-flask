@@ -15,7 +15,7 @@ before_script:
   - nvm use v4.1.2
   - npm install -g bower gulp
   - make setup-test-env production-install bootstrap-tests
-  - make serve &
+  # - make serve &
 
 # script: "make tests tests-webdriver"
 script: "make tests"
