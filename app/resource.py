@@ -138,8 +138,7 @@ def new(resource_name):
     if request.method == 'POST' and form.validate():
         instance = resource.manager.create(form.data)
         flash('%s %s created' % (title, get_title(instance)), 'success')
-        return redirect(url_for('.index',
-                                            resource_name=resource_name))
+        return redirect(url_for('.index', resource_name=resource_name))
 
     return render_template('resources/new.html',
                                  title='New %s' % title,

@@ -1,5 +1,7 @@
 {% extends 'layouts/default.html' %}
 
+{% from 'helpers/form.html' import render_field %}
+
 {% set title = resource_name | capitalize %}
 
 {% macro format_column(item, column) -%}
@@ -23,9 +25,7 @@
         {% if resource.filters %}
         <div class="filters">
             <div class="filter-select">
-                {% for filter in resource.filters %}
-                {{ form[filter] }}
-                {% endfor %}
+                {{ form.gateway_id }}
                 <button type="submit" class="button-primary" name="action" value="filter">Filter</button>
             </div>
         </div>

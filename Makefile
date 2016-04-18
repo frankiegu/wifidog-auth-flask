@@ -19,7 +19,7 @@ bootstrap-tests:
 	python manage.py bootstrap_tests
 
 tests:
-	python tests/test_site.py
+	python -m unittest discover tests
 
 tests-webdriver:
 	python tests/test_webdriver.py

@@ -1,6 +1,3 @@
-import logging
-logging.basicConfig(level=logging.INFO)
-
 from suds.client import Client
 from suds.plugin import MessagePlugin
 from suds.wsse import *

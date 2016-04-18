@@ -30,8 +30,8 @@ class ResourceSelectField(QuerySelectField):
 
 class GatewaySelectField(SelectField):
     def __init__(self, allow_blank=False, *args, **kwargs):
-        networks = NetworkResource.manager.instances()
         super(GatewaySelectField, self).__init__(*args, **kwargs)
+        networks = NetworkResource.manager.instances()
         self.choices =  [[n.title, [[g.id, g.title] for g in n.gateways]] for n in networks]
         if allow_blank:
             self.choices = [['All Networks', [['', 'All Gateways']]]] + self.choices
@@ -121,7 +121,11 @@ class Converter(ModelConverterBase):
 
     @converts('MANYTOONE')
     def conv_ManyToOne(self, field_args, **extra):
-        return ResourceSelectField(**field_args)
+        if extra['prop'].key == 'gateway':
+            del field_args['query_factory']
+            return GatewaySelectField(**field_args)
+        else:
+            return ResourceSelectField(**field_args)
 
     @converts('MANYTOMANY', 'ONETOMANY')
     def conv_ManyToMany(self, field_args, **extra):
