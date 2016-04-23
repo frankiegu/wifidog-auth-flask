@@ -3,6 +3,17 @@
 {{ form.original_id }}
 
 <fieldset>
+    <legend>Owner Details</legend>
+
+    <div data-row-span="1">
+        <div data-field-span="1">
+            {{ render_field(form.network) }}
+        </div>
+    </div>
+</fieldset>
+<br>
+
+<fieldset>
     <legend>Gateway Details</legend>
 
     <div data-row-span="2">
