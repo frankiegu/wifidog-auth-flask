@@ -20,5 +20,33 @@ jQuery(function($) {
 		update();
 	});
 
+	$('#network').change(function() {
+		var network = $(this).val(),
+			gateway = $('#gateway').val();
+
+		if (network == '__None') {
+			$('#gateway')
+				.val('__None')
+				.find('option[value!="__None"]').prop('disabled', true).hide();
+			$('#roles option:contains("super-admin")').prop('disabled', false);
+		} else {
+			$('#gateway')
+				.val('__None')
+				.find('option[data-network!="' + network + '"]').prop('disabled', true).hide().end()
+				.find('option[data-network="' + network + '"], option[value="__None"]').prop('disabled', false).show();
+			$('#roles option:contains("super-admin")').prop('disabled', true);
+		}
+	}).change();
+
+	$('#gateway').change(function() {
+		var gateway = $(this).val();
+
+		if (gateway == '__None') {
+			$('#roles option:contains("network-admin")').prop('disabled', false);
+		} else {
+			$('#roles option:contains("network-admin")').prop('disabled', true);
+		}
+	}).change();
+
 	update();
 });

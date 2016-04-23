@@ -14,6 +14,24 @@ from wtforms_components import SelectField
 
 p = inflect.engine()
 
+class ResourceSelect(widgets.Select):
+    def __call__(self, field, **kwargs):
+        kwargs.setdefault('id', field.id)
+        if self.multiple:
+            kwargs['multiple'] = True
+        html = ['<select %s>' % widgets.html_params(name=field.name, **kwargs)]
+        for val, obj, selected in field.iter_choices():
+            extra = {}
+
+            # Add data-* attributes from the object
+            if isinstance(obj, Gateway):
+                extra = { 'data-network': obj.network.id }
+
+            html.append(self.render_option(val, obj, selected, **extra))
+        html.append('</select>')
+        return widgets.HTMLString(''.join(html))
+
+
 class ResourceSelectField(QuerySelectField):
     def __init__(self, *args, **kwargs):
         super(ResourceSelectField, self).__init__(*args, **kwargs)
@@ -27,27 +45,13 @@ class ResourceSelectField(QuerySelectField):
             self._object_list = list((compat.text_type(get_pk(obj)), obj) for obj in self.resource.manager.instances())
         return self._object_list
 
+    def iter_choices(self):
+        if self.allow_blank:
+            yield ('__None', self.blank_text, self.data is None)
 
-class GatewaySelectField(SelectField):
-    def __init__(self, allow_blank=False, *args, **kwargs):
-        super(GatewaySelectField, self).__init__(*args, **kwargs)
+        for pk, obj in self._get_object_list():
+            yield (pk, obj, obj == self.data)
 
-        choices = []
-
-        networks = NetworkResource.manager.instances()
-        for network in networks:
-            gateways = NetworkResource.manager.relation_instances(network, 'gateways', GatewayResource)
-
-            network_choices = []
-            for gateway in gateways:
-                network_choices.append((gateway.id, gateway.title))
-
-            choices.append((network.title, network_choices))
-
-        if allow_blank:
-            choices = [['All Networks', [['', 'All Gateways']]]] + choices
-
-        self.choices = choices
 
 def converts(*args):
     def _inner(func):
@@ -134,11 +138,7 @@ class Converter(ModelConverterBase):
 
     @converts('MANYTOONE')
     def conv_ManyToOne(self, field_args, **extra):
-        if extra['prop'].key == 'gateway':
-            del field_args['query_factory']
-            return GatewaySelectField(**field_args)
-        else:
-            return ResourceSelectField(**field_args)
+        return ResourceSelectField(widget=ResourceSelect(), **field_args)
 
     @converts('MANYTOMANY', 'ONETOMANY')
     def conv_ManyToMany(self, field_args, **extra):
@@ -186,15 +186,15 @@ CategoryForm = None
 UserForm = None
 
 class VoucherIndex(Form):
-    gateway_id = GatewaySelectField('Gateway', default=lambda: request.args.get('gateway_id'))
+    gateway_id = SelectField('Gateway', default=lambda: request.args.get('gateway_id'))
     action = StringField(widget=widgets.SubmitInput())
 
 class ProductIndex(Form):
-    gateway_id = GatewaySelectField('Gateway', default=lambda: request.args.get('gateway_id'))
+    gateway_id = SelectField('Gateway', default=lambda: request.args.get('gateway_id'))
     action = StringField(widget=widgets.SubmitInput())
 
 class CategoryIndex(Form):
-    gateway_id = GatewaySelectField('Gateway', default=lambda: request.args.get('gateway_id'))
+    gateway_id = SelectField('Gateway', default=lambda: request.args.get('gateway_id'))
     action = StringField(widget=widgets.SubmitInput())
 
 def init_forms():
@@ -236,7 +236,6 @@ def init_forms():
                              },
                              converter=converter,
                              exclude=['code', 'created_at', 'updated_at', 'status'])
-    # VoucherForm.gateway_id = GatewaySelectField(allow_blank=False)
     VoucherForm.original_id = HiddenField()
 
     ProductForm = model_form(Product,
@@ -246,7 +245,6 @@ def init_forms():
                              },
                              converter=converter,
                              exclude=['order_items'])
-    # ProductForm.gateway = GatewaySelectField()
     ProductForm.original_id = HiddenField()
 
     CategoryForm = model_form(Category,

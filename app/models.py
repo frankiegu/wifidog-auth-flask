@@ -11,15 +11,15 @@ from app import constants
 from app.config import RESOURCES
 
 from flask import current_app
-from flask.ext.potion import fields
-from flask.ext.security import UserMixin, RoleMixin, current_user, SQLAlchemyUserDatastore, Security
-from flask.ext.sqlalchemy import SQLAlchemy
+from flask_security import UserMixin, RoleMixin, current_user, SQLAlchemyUserDatastore
+from flask_sqlalchemy import SQLAlchemy
+
 from random import choice
 
 from sqlalchemy import event
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import backref
-from sqlalchemy.schema import PrimaryKeyConstraint, UniqueConstraint
+from sqlalchemy.schema import UniqueConstraint
 
 
 logger = logging.getLogger(__name__)
@@ -32,13 +32,13 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 db = SQLAlchemy()
 
-chars = string.letters + string.digits
+CHARS = string.letters + string.digits
 
 def generate_token():
     return uuid.uuid4().hex
 
 def generate_id():
-    source = ''.join(choice(chars) for _ in range(4))
+    source = ''.join(choice(CHARS) for _ in range(4))
     encoded = base64.b32encode(source)
     result = unicode(re.sub(r'=*$', '', encoded))
     return result
