@@ -31,10 +31,23 @@ class ResourceSelectField(QuerySelectField):
 class GatewaySelectField(SelectField):
     def __init__(self, allow_blank=False, *args, **kwargs):
         super(GatewaySelectField, self).__init__(*args, **kwargs)
+
+        choices = []
+
         networks = NetworkResource.manager.instances()
-        self.choices =  [[n.title, [[g.id, g.title] for g in n.gateways]] for n in networks]
+        for network in networks:
+            gateways = NetworkResource.manager.relation_instances(network, 'gateways', GatewayResource)
+
+            network_choices = []
+            for gateway in gateways:
+                network_choices.append((gateway.id, gateway.title))
+
+            choices.append((network.title, network_choices))
+
         if allow_blank:
-            self.choices = [['All Networks', [['', 'All Gateways']]]] + self.choices
+            choices = [['All Networks', [['', 'All Gateways']]]] + choices
+
+        self.choices = choices
 
 def converts(*args):
     def _inner(func):

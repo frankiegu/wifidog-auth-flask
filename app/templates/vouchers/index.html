@@ -56,7 +56,7 @@
                         {% endif %}
                         {{ item.minutes }}
                     </td>
-                    <td class="traffic" data-label="Traffic">{{ item.incoming | bytes }} in; {{ item.outgoing | bytes }} out; {{ (item.incoming + item.outgoing) | bytes }} both</td>
+                    <td class="traffic" data-label="Traffic">{{ item.incoming | kb }} in; {{ item.outgoing | kb }} out; {{ (item.incoming + item.outgoing) | kb }} both</td>
                 </tr>
                 {% endfor %}
             </tbody>

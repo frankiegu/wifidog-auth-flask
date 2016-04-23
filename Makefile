@@ -21,6 +21,9 @@ bootstrap-tests:
 tests:
 	python -m unittest discover tests
 
+tests-watcher:
+	pywatch "make tests" app/ tests/
+
 tests-webdriver:
 	python tests/test_webdriver.py
 

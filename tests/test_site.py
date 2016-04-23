@@ -36,7 +36,7 @@ class TestSite(TestCase):
         self.assertEquals(200, response.status_code)
 
         html = self.get_html(response)
-        options = html.findall('//select[@id="gateway"]/option')
+        options = html.findall('//select[@id="gateway"]//option')
 
         self.assertEquals(1, len(options))
         self.assertEquals('main-gateway1', options[0].get('value'))

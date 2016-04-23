@@ -3,19 +3,18 @@ import inflect
 import jinja2
 
 from app.forms import LoginVoucherForm
-from app.models import Auth, Gateway, Network, Ping, Voucher, \
-        generate_token, db
+from app.models import Auth, Gateway, Ping, Voucher, generate_token, db
 from app.payu import get_transaction, set_transaction, capture
 from app.resources import GatewayResource, NetworkResource, VoucherResource, UserResource
 from app.ext import influx_db
 from app.signals import voucher_logged_in
 from app.utils import has_a_role
 
-from flask import request, current_app, redirect, render_template, url_for, Blueprint, flash, session, abort
+from flask import request, current_app, redirect, render_template, url_for, Blueprint
+from flask import flash, session, abort
 
-from flask.ext.menu import register_menu
-from flask.ext.potion.instances import Condition, COMPARATORS
-from flask.ext.security import login_required, roles_accepted, current_user
+from flask_potion.instances import Condition, COMPARATORS
+from flask_security import login_required
 
 from sqlalchemy import func
 
@@ -25,7 +24,7 @@ bp = Blueprint('app', __name__)
 
 @jinja2.contextfilter
 @bp.app_template_filter()
-def bytes(context, value):
+def kb(context, value):
     return value / 1024
 
 

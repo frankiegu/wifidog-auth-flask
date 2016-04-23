@@ -1,15 +1,21 @@
 import errno
 import flask
+import logging
 import os
 
 from app.models import Network, User, Gateway, Voucher, Category, Product, Currency, db
 from flask.ext.login import current_user, login_required
 from flask.ext.potion import Api, fields, signals
+from flask.ext.potion.backends import Pagination
 from flask.ext.potion.routes import Relation, Route, ItemRoute
 from flask.ext.potion.contrib.principals import PrincipalResource, PrincipalManager
 from flask.ext.security import current_user
 from flask.ext.uploads import UploadSet, IMAGES
 from PIL import Image
+from sqlalchemy.orm.collections import InstrumentedList
+
+
+logger = logging.getLogger(__name__)
 
 super_admin_only = 'super-admin'
 network_or_above = ['super-admin', 'network-admin']
@@ -28,25 +34,42 @@ def mkdir_p(path):
 
 class Manager(PrincipalManager):
     def instances(self, where=None, sort=None):
-        query = PrincipalManager.instances(self, where, sort)
+        query = super(Manager, self).instances(where, sort)
+        return self.filter_query(query, self.resource)
 
+    def relation_instances(self, item, attribute, target_resource, page=None, per_page=None):
+        query = getattr(item, attribute)
+        query = self.filter_query(query, target_resource)
+
+        if isinstance(query, InstrumentedList):
+            if page and per_page:
+                return Pagination.from_list(query, page, per_page)
+            return query
+
+        if page and per_page:
+            return query.paginate(page=page, per_page=per_page)
+
+        return query.all()
+
+    def filter_query(self, query, resource):
         if current_user.has_role('network-admin') or current_user.has_role('gateway-admin'):
-            if self.model == Network:
+            if resource == NetworkResource:
                 query = query.filter_by(id=current_user.network_id)
-            elif self.model in [ Gateway, User ]:
+            elif resource in (GatewayResource, UserResource):
                 query = query.filter_by(network_id=current_user.network_id)
 
         if current_user.has_role('network-admin'):
-            if self.model == Voucher:
+            if resource == VoucherResource:
                 query = query.join(Voucher.gateway).join(Gateway.network).filter(Network.id == current_user.network_id)
 
         if current_user.has_role('gateway-admin'):
-            if self.model == Gateway:
+            if resource == GatewayResource:
                 query = query.filter_by(id=current_user.gateway_id)
-            elif self.model in [ User, Voucher ]:
+            elif resource in (UserResource, VoucherResource):
                 query = query.filter_by(gateway_id=current_user.gateway_id)
 
         return query
+
 
 class VoucherManager(Manager):
     def instances(self, where=None, sort=None):

@@ -1,12 +1,13 @@
 import base64
 import datetime
 import json
+import logging
 import re
 import string
 import uuid
-
 import flask
 
+from app import constants
 from app.config import RESOURCES
 
 from flask import current_app
@@ -20,7 +21,8 @@ from sqlalchemy.engine import Engine
 from sqlalchemy.orm import backref
 from sqlalchemy.schema import PrimaryKeyConstraint, UniqueConstraint
 
-import constants
+
+logger = logging.getLogger(__name__)
 
 @event.listens_for(Engine, 'connect')
 def set_sqlite_pragma(dbapi_connection, connection_record):

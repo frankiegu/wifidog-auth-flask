@@ -1,2 +1,2 @@
 import logging
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(filename='logs/tests.log', level=logging.DEBUG)
