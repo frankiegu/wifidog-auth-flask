@@ -1,5 +1,7 @@
 data/*.db
 *.pyc
+app/static/scripts/
+app/static/styles/
 app/tags/**/*.js
 bootstrap.py
 bower_components/

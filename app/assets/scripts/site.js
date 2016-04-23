@@ -31,9 +31,15 @@ jQuery(function($) {
 			$('#roles option:contains("super-admin")').prop('disabled', false);
 		} else {
 			$('#gateway')
-				.val('__None')
 				.find('option[data-network!="' + network + '"]').prop('disabled', true).hide().end()
-				.find('option[data-network="' + network + '"], option[value="__None"]').prop('disabled', false).show();
+				.find('option[data-network="' + network + '"], option[value="__None"]').prop('disabled', false).show().end();
+
+			if ($('#gateway option:enabled[value="' + gateway + '"]').length) {
+				$('#gateway').val(gateway);
+			} else {
+				$('#gateway').val('__None');
+			}
+
 			$('#roles option:contains("super-admin")').prop('disabled', true);
 		}
 	}).change();
