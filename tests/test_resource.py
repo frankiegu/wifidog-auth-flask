@@ -11,7 +11,7 @@ from pyquery import PyQuery
 from test_case import TestCase
 
 
-class TestSite(TestCase):
+class TestResource(TestCase):
     pass
 
 if __name__ == '__main__':

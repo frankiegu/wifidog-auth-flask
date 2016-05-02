@@ -54,5 +54,15 @@ jQuery(function($) {
 		}
 	}).change();
 
+	$('tbody button.action').on('click', function() {
+		var $resource = $(this).closest('[data-url]').data('url');
+		console.log($resource);
+		$.post($resource, { action: $(this).val() })
+		 .done(function() {
+		 	 location.reload(true);
+		 });
+		 return false;
+	});
+
 	update();
 });

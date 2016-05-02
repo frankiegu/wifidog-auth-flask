@@ -6,7 +6,7 @@ import uuid
 from app.context_processors import init_context_processors
 from app.forms import init_forms
 from app.models import db, users
-from app.resource import resource_blueprint, init_resources
+from app.resource import bp as resource_blueprint, init_resources
 from app.resources import api, logos
 from app.ext import influx_db, menu, principal, security
 from app.signals import init_signals

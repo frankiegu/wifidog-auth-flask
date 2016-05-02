@@ -15,7 +15,7 @@ from flask.ext.security import login_required
 from wtforms.meta import DefaultMeta
 
 
-resource_blueprint = Blueprint('resource', __name__)
+bp = Blueprint('resource', __name__)
 p = inflect.engine()
 
 resource_name = '<any(networks, gateways, vouchers, users, categories, products, currencies):resource_name>'
@@ -54,7 +54,7 @@ def index_by_name(name):
         return getattr(forms, form_class)
 
 
-@resource_blueprint.route('/%s' % resource_name, methods=['GET'])
+@bp.route('/%s' % resource_name, methods=['GET'])
 @login_required
 def index(resource_name):
     title = resource_name[0].upper() + resource_name[1:]
@@ -94,7 +94,7 @@ def index(resource_name):
                            pagination=pagination)
 
 
-@resource_blueprint.route('/%s/<id>/edit' % resource_name,
+@bp.route('/%s/<id>/edit' % resource_name,
                           methods=['GET', 'POST'])
 @login_required
 def edit(resource_name, id):
@@ -102,15 +102,21 @@ def edit(resource_name, id):
     title = singular[0].upper() + singular[1:]
     resource = resource_by_name(resource_name)
 
-    if (request.method == 'POST' and
-            request.form.get('action') == 'delete'):
-        instance = resource.manager.read(id)
-        resource.manager.delete(instance)
-        flash('%s %s deleted' % (title, get_title(instance)), 'success')
-        return redirect(url_for('.index',
-                                            resource_name=resource_name))
-
     instance = resource.manager.read(id)
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        if action == 'delete':
+            resource.manager.delete(instance)
+            flash('%s %s deleted' % (title, get_title(instance)), 'success')
+            return redirect(url_for('.index', resource_name=resource_name))
+        elif action is not None:
+            method = getattr(resource.manager, action)
+            method(instance)
+            flash('%s %s successful %s' % (title, get_title(instance), action), 'success')
+            return redirect(url_for('.index', resource_name=resource_name))
+
     form = form_by_name(resource_name)(request.form, instance)
 
     if request.method == 'POST':
@@ -126,7 +132,7 @@ def edit(resource_name, id):
                                  instance=instance)
 
 
-@resource_blueprint.route('/%s/new' % resource_name, methods=['GET', 'POST'])
+@bp.route('/%s/new' % resource_name, methods=['GET', 'POST'])
 @login_required
 def new(resource_name):
     singular = p.singular_noun(resource_name)
@@ -146,7 +152,7 @@ def new(resource_name):
                                  resource_name=resource_name,
                                  instance=instance)
 
-@resource_blueprint.route('/%s' % resource_name, methods=['DELETE'])
+@bp.route('/%s' % resource_name, methods=['DELETE'])
 @login_required
 def bulk_delete(resource_name):
     resource = resource_by_name(resource_name)
@@ -160,7 +166,7 @@ def bulk_delete(resource_name):
     return redirect(url_for('.index', resource_name=resource_name))
 
 
-@resource_blueprint.route('/%s/edit' % resource_name, methods=['GET', 'POST'])
+@bp.route('/%s/edit' % resource_name, methods=['GET', 'POST'])
 @login_required
 def bulk_edit(resource_name):
     singular = p.singular_noun(resource_name)

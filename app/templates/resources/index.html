@@ -38,7 +38,7 @@
     </div>
 
     {% if pagination.items %}
-    <table class="flakes-table">
+    <table class="{{ resource.title | lower }} flakes-table">
         <colgroup>
             <col span="1" style="width: 20px">
         </colgroup>
@@ -55,7 +55,7 @@
         </thead>
         <tbody>
             {% for item in pagination.items %}
-            <tr data-id="{{ item.id }}">
+            <tr class="{{ resource.title | lower }}" data-url="{{ url_for('resource.edit', resource_name=resource_name, id=item.id) }}" data-id="{{ item.id }}">
                 <td class="checkbox"><input type="checkbox" name="ids" value="{{ item.id }}"></td>
                 {% for column in resource.columns %}
                 <td class="{{ column.name }}" data-label="{{ column.title }}">
@@ -71,7 +71,7 @@
                 {% if resource.states %}
                 <td class="actions">
                     {% for action in available_actions(resource_name, item.status, 'admin') %}
-                        <button type="submit" class="action" name="action" value="{{ action.name }}">
+                        <button type="button" class="action" name="action" value="{{ action.name }}">
                             <b class="oi" data-glyph="{{ action.icon }}" title="{{ action.title }}" aria-hidden="true"></b>
                             {{ action.title }}
                         </button>
