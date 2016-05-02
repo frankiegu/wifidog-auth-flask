@@ -217,6 +217,7 @@ def home():
         all_count = VoucherResource.manager.instances().count()
         count = '%s / %s' % (active_count, all_count)
         metrics.append({
+            'id': 'vouchers',
             'title': 'Active Vouchers',
             'value': count,
             'label': 'Active %s' % p.plural('Voucher', count),
@@ -224,6 +225,7 @@ def home():
 
         count = UserResource.manager.instances().count()
         metrics.append({
+            'id': 'users',
             'title': 'User Accounts',
             'value': count,
             'label': p.plural('User', count),
@@ -236,6 +238,7 @@ def home():
     if has_a_role('super-admin', 'network-admin'):
         count = GatewayResource.manager.instances().count()
         metrics.append({
+            'id': 'gateways',
             'title': 'Gateways',
             'value': count,
             'label': p.plural('Gateway', count),
@@ -244,19 +247,10 @@ def home():
     if has_a_role('super-admin'):
         count = NetworkResource.manager.instances().count()
         metrics.append({
+            'id': 'networks',
             'title': 'Networks',
             'value': count,
             'label': p.plural('Network', count),
         })
 
     return render_template(template, metrics=metrics)
-
-
-@bp.route('/config')
-def config():
-    return current_app.config['SQLALCHEMY_DATABASE_URI']
-
-
-@bp.route('/debug')
-def debug():
-    return session

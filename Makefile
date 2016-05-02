@@ -19,10 +19,14 @@ bootstrap-tests:
 	python manage.py bootstrap_tests
 
 tests:
-	python -m unittest discover tests
+	python -m unittest discover -s tests
+
+coverage:
+	coverage run --source app -m unittest discover -s tests
+	coverage html
 
 tests-watcher:
-	pywatch "make tests" app/ tests/
+	pywatch "make coverage" app/ tests/
 
 tests-webdriver:
 	python tests/test_webdriver.py

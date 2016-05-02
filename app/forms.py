@@ -6,6 +6,7 @@ from app.resources import GatewayResource, NetworkResource
 from app.utils import args_get
 from flask import current_app, request
 from flask.ext.wtf import Form
+from sqlalchemy import func
 from wtforms import compat, fields, HiddenField, StringField, \
         IntegerField, validators, widgets
 from wtforms.ext.sqlalchemy.orm import model_form, ModelConverterBase, \
@@ -167,9 +168,9 @@ class LoginVoucherForm(Form):
     mac = HiddenField('MAC', default=args_get('mac'))
     url = HiddenField('URL', default=args_get('url'))
 
-    def validate_voucher(form, field):
+    def validate_voucher_code(form, field):
         voucher_code = field.data.upper()
-        voucher = Voucher.query.filter_by(code=voucher_code).first()
+        voucher = Voucher.query.filter(func.upper(Voucher.code) == voucher_code).first()
 
         if voucher is None:
             raise validators.ValidationError('Voucher does not exist')

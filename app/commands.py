@@ -41,7 +41,8 @@ def bootstrap_tests():
     create_user(u'main-gateway2@example.com', u'admin', u'Main', u'Gateway2', u'gateway-admin', u'main-network', u'main-gateway2', quiet=True)
 
     create_user(u'other-gateway1@example.com', u'admin', u'Other', u'Gateway1', u'gateway-admin', u'other-network', u'other-gateway1', quiet=True)
-    create_user(u'other-gateway2@example.com', u'admin', u'Other', u'Gateway1', u'gateway-admin', u'other-network', u'other-gateway2', quiet=True)
+
+    create_user(u'user@example.com', u'password', u'Regular', u'User', None, u'main-network', u'main-gateway1', quiet=True)
 
     create_voucher(u'main-gateway1', 60, 'main-1-1', quiet=True)
     create_voucher(u'main-gateway1', 60, 'main-1-2', quiet=True)

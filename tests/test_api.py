@@ -91,9 +91,10 @@ class TestApi(TestCase):
         self.assertEquals(200, response.status_code)
 
         users = json.loads(response.data)
-        self.assertEquals(1, len(users))
+        self.assertEquals(2, len(users))
 
         self.assertEquals('main-gateway1@example.com', users[0]['email'])
+        self.assertEquals('user@example.com', users[1]['email'])
 
     def test_users_index_as_network(self):
         self.login('main-network@example.com', 'admin')
@@ -102,11 +103,12 @@ class TestApi(TestCase):
         self.assertEquals(200, response.status_code)
 
         users = json.loads(response.data)
-        self.assertEquals(3, len(users))
+        self.assertEquals(4, len(users))
 
         self.assertEquals('main-gateway1@example.com', users[0]['email'])
         self.assertEquals('main-gateway2@example.com', users[1]['email'])
         self.assertEquals('main-network@example.com', users[2]['email'])
+        self.assertEquals('user@example.com', users[3]['email'])
 
     def test_users_index_as_super(self):
         self.login('super-admin@example.com', 'admin')
