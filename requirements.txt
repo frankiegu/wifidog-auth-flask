@@ -1,5 +1,6 @@
 asbool
 blinker
+coverage
 Flask
 Flask-Bcrypt
 Flask-InfluxDB

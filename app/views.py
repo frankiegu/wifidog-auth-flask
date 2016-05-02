@@ -4,7 +4,6 @@ import jinja2
 
 from app.forms import LoginVoucherForm
 from app.models import Auth, Gateway, Ping, Voucher, generate_token, db
-from app.payu import get_transaction, set_transaction, capture
 from app.resources import GatewayResource, NetworkResource, VoucherResource, UserResource
 from app.ext import influx_db
 from app.signals import voucher_logged_in
@@ -171,39 +170,6 @@ def _show_gateway(gw_id):
 @bp.route('/wifidog/portal/')
 def wifidog_portal():
     return _show_gateway(request.args.get('gw_id'))
-
-
-@bp.route('/pay')
-def pay():
-    return_url = url_for('.pay_return', _external=True)
-    cancel_url = url_for('.pay_cancel', _external=True)
-    response = set_transaction('ZAR',
-                               1000,
-                               'Something',
-                               return_url, cancel_url)
-    return redirect('%s?PayUReference=%s' %
-                          (capture, response.payUReference))
-
-
-@bp.route('/pay/return')
-def pay_return():
-    response = get_transaction(request.args.get('PayUReference'))
-    basketAmount = '{:.2f}'.format(int(response.basket.amountInCents) / 100)
-    category = 'success' if response.successful else 'error'
-    flash(response.displayMessage, category)
-    return render_template('payu/transaction.html',
-                                 response=response,
-                                 basketAmount=basketAmount)
-
-
-@bp.route('/pay/cancel')
-def pay_cancel():
-    response = get_transaction(request.args.get('payUReference'))
-    basketAmount = '{:.2f}'.format(int(response.basket.amountInCents) / 100)
-    flash(response.displayMessage, 'warning')
-    return render_template('payu/transaction.html',
-                                 response=response,
-                                 basketAmount=basketAmount)
 
 
 @bp.route('/')

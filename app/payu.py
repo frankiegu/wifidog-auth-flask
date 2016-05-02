@@ -1,6 +1,10 @@
+from flask import Blueprint
+
 from suds.client import Client
 from suds.plugin import MessagePlugin
 from suds.wsse import *
+
+bp = Blueprint('payu', __name__)
 
 api = 'ONE_ZERO'
 wsdl = 'https://staging.payu.co.za/service/PayUAPI?wsdl'
@@ -54,3 +58,35 @@ def get_transaction(payUReference):
         }
     )
     return response
+
+@bp.route('/')
+def pay():
+    return_url = url_for('.pay_return', _external=True)
+    cancel_url = url_for('.pay_cancel', _external=True)
+    response = set_transaction('ZAR',
+                               1000,
+                               'Something',
+                               return_url, cancel_url)
+    return redirect('%s?PayUReference=%s' %
+                          (capture, response.payUReference))
+
+
+@bp.route('/return')
+def pay_return():
+    response = get_transaction(request.args.get('PayUReference'))
+    basketAmount = '{:.2f}'.format(int(response.basket.amountInCents) / 100)
+    category = 'success' if response.successful else 'error'
+    flash(response.displayMessage, category)
+    return render_template('payu/transaction.html',
+                                 response=response,
+                                 basketAmount=basketAmount)
+
+
+@bp.route('/cancel')
+def pay_cancel():
+    response = get_transaction(request.args.get('payUReference'))
+    basketAmount = '{:.2f}'.format(int(response.basket.amountInCents) / 100)
+    flash(response.displayMessage, 'warning')
+    return render_template('payu/transaction.html',
+                                 response=response,
+                                 basketAmount=basketAmount)
