@@ -106,6 +106,9 @@ RESOURCES = {
             'gateway-admin',
         ),
         'columns': (
+            { 'name': 'status',
+              'title': 'Status',
+              'format': lambda product: '<span class="oi" data-glyph="%s" title="%s" aria-hidden="true"></span' % (RESOURCES['products']['states'][product.status]['icon'], product.status) },
             { 'name': 'categories',
               'title': 'Categories',
               'format': lambda product: '<br />'.join([c.title for c in product.categories]) },
@@ -116,6 +119,44 @@ RESOURCES = {
               'title': 'Price',
               'format': lambda product: product.currency.render(product.price) },
         ),
+        'states': {
+            'enabled': {
+                'icon': 'check',
+                'actions': (
+                    'disable',
+                    'archive',
+                ),
+            },
+            'disabled': {
+                'icon': 'x',
+                'actions': (
+                    'enable',
+                    'archive',
+                ),
+            },
+            'archived': {
+                'icon': 'trash',
+            },
+        },
+        'actions': {
+            'admin': (
+                {
+                    'name': 'enable',
+                    'title': 'Enabled',
+                    'icon': 'tick'
+                },
+                {
+                    'name': 'disable',
+                    'title': 'Disable',
+                    'icon': 'cross',
+                },
+                {
+                    'name': 'archive',
+                    'title': 'Archive',
+                    'icon': 'x',
+                },
+            ),
+        },
     },
     'vouchers': {
         'category': 'Vouchers',

@@ -439,6 +439,8 @@ class Product(db.Model):
     gateway_id = db.Column(db.Unicode(20), db.ForeignKey('gateways.id', onupdate='cascade'))
     gateway = db.relationship(Gateway, backref=backref('products', lazy='dynamic'))
 
+    status = db.Column(db.String(20), nullable=False, default='enabled')
+
     categories = db.relationship(Category, secondary=product_categories, backref=db.backref('products', lazy='dynamic'))
 
     code = db.Column(db.Unicode(10), nullable=False)
@@ -458,6 +460,18 @@ class Product(db.Model):
             UniqueConstraint('network_id', 'gateway_id', 'code'),
             UniqueConstraint('network_id', 'gateway_id', 'title'),
     )
+
+    @record_change
+    def enable(self):
+        self.status = 'enabled'
+
+    @record_change
+    def disable(self):
+        self.status = 'disabled'
+
+    @record_change
+    def archive(self):
+        self.status = 'archived'
 
 class Order(db.Model):
     __tablename__ = 'orders'

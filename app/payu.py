@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, current_app
 
 from suds.client import Client
 from suds.plugin import MessagePlugin
@@ -20,18 +20,18 @@ safekey = '{CE62CE80-0EFD-4035-87C1-8824C5C46E7F}'
 username = '100032'
 password = 'PypWWegU'
 
+def init_app(app):
+    client = Client(wsdl, plugins=[PayUPlugin()])
+    security = Security()
+    token = UsernameToken(username, password)
+    security.tokens.append(token)
+    client.set_options(wsse=security)
+
 # Add the required attributes and namespaces for PayU to recognize the request
 class PayUPlugin(MessagePlugin):
     def marshalled(self, context):
         username_token = context.envelope.childAtPath('Header/wsse:Security/wsse:UsernameToken')
         username_token.getChild('wsse:Password').set('Type', 'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText')
-
-client = Client(wsdl, plugins=[PayUPlugin()])
-
-security = Security()
-token = UsernameToken(username, password)
-security.tokens.append(token)
-client.set_options(wsse=security)
 
 def set_transaction(currency_code, amount_in_cents, description, return_url, cancel_url):
     additional_information['returnUrl'] = return_url

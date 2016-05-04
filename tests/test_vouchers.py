@@ -108,7 +108,6 @@ class TestVouchers(TestCase):
 
         with self.app.app_context():
             voucher = Voucher.query.filter_by(code='main-1-1').first()
-            minutes = voucher.minutes
 
         response = self.client.post('/vouchers/%s/edit' % voucher.id, data={
             'action': 'archive',

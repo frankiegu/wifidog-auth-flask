@@ -1,9 +1,7 @@
 app/static/scripts/
 app/static/styles/
 app/tags/**/*.js
-bootstrap.py
 bower_components/
-build/
 .bundle/
 .coverage
 data/*.db

@@ -258,9 +258,28 @@ class CategoryResource(PrincipalResource):
         network = fields.ToOne('networks')
         gateway = fields.ToOne('gateways')
 
+class ProductManager(Manager):
+    def instances(self, where=None, sort=None):
+        query = super(ProductManager, self).instances(where, sort)
+        query = query.filter(Product.status != 'archived')
+        return query
+
+    def enable(self, product):
+        product.enable()
+        db.session.commit()
+
+    def disable(self, product):
+        product.disable()
+        db.session.commit()
+
+    def archive(self, product):
+        product.archive()
+        db.session.commit()
+
+
 class ProductResource(PrincipalResource):
     class Meta:
-        manager = Manager
+        manager = ProductManager
 
         model = Product
         include_id = True
@@ -278,6 +297,18 @@ class ProductResource(PrincipalResource):
         network = fields.ToOne('networks')
         gateway = fields.ToOne('gateways')
         currency = fields.ToOne('currencies')
+
+    @ItemRoute.POST
+    def enable(self, product):
+        self.manager.enable(product)
+
+    @ItemRoute.POST
+    def disable(self, product):
+        self.manager.disable(product)
+
+    @ItemRoute.POST
+    def archive(self, product):
+        self.manager.archive(product)
 
 class CurrencyResource(PrincipalResource):
     class Meta:

@@ -54,8 +54,10 @@ def create_app(config=None):
     from app.views import bp
     app.register_blueprint(bp)
 
-    from app.payu import bp
-    app.register_blueprint(bp, url_prefix='/pay')
+    if app.config['PAYU_ENABLED']:
+        from app.payu import bp, init_app
+        app.register_blueprint(bp, url_prefix='/pay')
+        init_app(app)
 
     @identity_loaded.connect_via(app)
     def on_identity_loaded(sender, identity):
